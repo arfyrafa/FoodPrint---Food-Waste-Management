@@ -1,0 +1,78 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+  /* Hijau daun dari logo FoodPrint */
+  --color-brand-50: #f2f8ec;
+  --color-brand-100: #e0f0d3;
+  --color-brand-200: #c2e1a8;
+  --color-brand-300: #9acb74;
+  --color-brand-400: #77b348;
+  --color-brand-500: #5b9a2d;
+  --color-brand-600: #457b21;
+  --color-brand-700: #2f6420;
+  --color-brand-800: #1f4f1a;
+  --color-brand-900: #153b13;
+
+  /* Oranye hangat dari logo */
+  --color-accent-50: #fff6ed;
+  --color-accent-100: #ffead3;
+  --color-accent-200: #fed0a4;
+  --color-accent-300: #fdae6b;
+  --color-accent-400: #fb8a35;
+  --color-accent-500: #f06c10;
+  --color-accent-600: #d95507;
+  --color-accent-700: #b33f09;
+
+  --color-cream: #fffaf2;
+  --color-ink: #1d2a1b;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-cream text-ink antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+  input[type='number']::-webkit-inner-spin-button {
+    opacity: 0.4;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-stone-200/80 bg-white shadow-[0_1px_2px_rgba(30,40,20,0.04)];
+  }
+  .input {
+    @apply w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-[15px] text-ink placeholder:text-stone-400
+      focus:border-brand-500 focus:ring-2 focus:ring-brand-200 focus:outline-none disabled:bg-stone-100;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-stone-700;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f1efe9 25%, #e7e4dc 37%, #f1efe9 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.3s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+.fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
