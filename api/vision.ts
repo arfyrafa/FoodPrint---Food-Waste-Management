@@ -4,16 +4,21 @@ import { generateJson, parseDataUrl } from './_lib/gemini.js'
 import { fail, handleAiError } from './_lib/respond.js'
 import { visionGeminiSchema, visionRequest, visionResult } from './_lib/schemas.js'
 
-const SYSTEM = `Kamu adalah asisten dapur yang menganalisis FOTO SISA MAKANAN di kantin/warung Indonesia.
-Tugas: kenali setiap jenis makanan yang terlihat, tentukan kategorinya, dan perkirakan jumlah PORSI yang tersisa.
+const SYSTEM = `Kamu adalah ahli gizi dan keamanan pangan untuk kantin/UMKM kuliner Indonesia.
+Kamu menerima FOTO SATU MAKANAN. Tugas:
+1. Kenali makanannya (nama umum di Indonesia) dan perkirakan 1 porsi yang terlihat (contoh "1 piring", "1 mangkuk").
+2. Perkirakan total kalori per porsi.
+3. Komposisi gizi makro dalam PERSEN dari total energi: protein_pct, carbs_pct, fat_pct, fiber_pct. Jumlahkan mendekati 100.
+4. 3-5 vitamin/mineral paling menonjol dengan perkiraan % AKG (Angka Kecukupan Gizi orang dewasa Indonesia) per porsi,
+   contoh {"name":"Vitamin C","akg_pct":25}.
+5. Kelayakan makan berdasarkan TANDA VISUAL saja: status "layak", "periksa" (ragu / ada tanda mencurigakan / foto kurang jelas),
+   atau "tidak_layak" (jamur, berlendir, warna/tekstur jelas rusak). signs = 2-4 tanda yang terlihat. advice = saran singkat penyimpanan/penanganan.
 Aturan:
-- Jawab HANYA JSON sesuai skema, semua teks dalam Bahasa Indonesia.
-- Kategori: karbohidrat (nasi, mie, kentang, roti), protein (ayam, telur, ikan, daging, tahu, tempe),
-  sayur (sayuran, gado-gado, lalapan), lauk_lain (gorengan, sambal, kerupuk), minuman, lainnya.
-- Satu porsi standar kantin = 1 piring/mangkuk sajian untuk 1 orang.
-- Jika daftar menu outlet diberikan, gunakan nama menu tersebut bila cocok dan hitung porsi relatif terhadap 1 porsi menu itu.
-- JANGAN mengarang. Jika ragu, turunkan confidence (0-1) dan jelaskan di notes (misal foto gelap/buram).
-- Jika foto bukan makanan, is_food=false dan items kosong.`
+- Jawab HANYA JSON sesuai skema, Bahasa Indonesia, angka bulat.
+- Semua angka adalah PERKIRAAN. Jangan berpura-pura pasti.
+- Foto tidak bisa mendeteksi bakteri, racun, atau bau: jika ragu, pilih "periksa" dan sarankan cek bau/rasa/waktu masak.
+- Jika foto bukan makanan, is_food=false dan isi nilai lain seadanya (0 / kosong).`
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!allowMethods(req, res, ['POST'])) return
@@ -28,21 +33,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const allowed = await consumeAiQuota(auth.db, auth.user.id, 'vision')
-    if (!allowed) return fail(res, 'quota', 'Batas 30 penggunaan AI hari ini sudah tercapai. Silakan isi manual.')
+    if (!allowed) return fail(res, 'quota', 'Batas 30 penggunaan AI hari ini sudah tercapai. Coba lagi besok.')
 
-    const menuText = parsed.data.menus?.length
-      ? `Daftar menu outlet: ${parsed.data.menus.join(', ')}.`
-      : 'Tidak ada daftar menu.'
+    const hint = parsed.data.hint?.trim() ? `Petunjuk dari pengguna: makanan ini kemungkinan "${parsed.data.hint.trim()}".` : ''
 
     const raw = await generateJson({
       system: SYSTEM,
-      parts: [{ text: `${menuText}\nAnalisis foto sisa makanan berikut.` }, { inlineData: image }],
+      parts: [{ text: `${hint}\nAnalisis gizi dan kelayakan makanan pada foto berikut.` }, { inlineData: image }],
       responseSchema: visionGeminiSchema,
       temperature: 0.2,
     })
     const result = visionResult.safeParse(raw)
-    if (!result.success) return fail(res, 'ai_error', 'Hasil AI tidak bisa dibaca. Silakan isi manual.')
-    if (!result.data.is_food) return fail(res, 'not_food', 'Foto tidak terdeteksi sebagai makanan. Coba foto lain atau isi manual.')
+    if (!result.success) return fail(res, 'ai_error', 'Hasil AI tidak bisa dibaca. Coba lagi.')
+    if (!result.data.is_food) return fail(res, 'not_food', 'Foto tidak terdeteksi sebagai makanan. Coba foto lain yang lebih jelas.')
 
     res.status(200).json({ ok: true, source: 'ai', result: result.data })
   } catch (err) {

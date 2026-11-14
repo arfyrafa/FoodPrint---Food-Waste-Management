@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { friendlyError, supabase } from './supabase'
 import type { DailyRecord, Menu } from './types'
 
-export async function fetchMenus(outletId: string, includeInactive = false): Promise<Menu[]> {
-  let q = supabase.from('menus').select('*').eq('outlet_id', outletId).order('created_at')
+const MENU_COLS = 'id, outlet_id, name, price, hpp, unit, is_active, created_at'
+
+export async function fetchMenus(outletId: string, includeInactive = false, withPhoto = false): Promise<Menu[]> {
+  let q = supabase.from('menus').select(withPhoto ? `${MENU_COLS}, photo_url` : MENU_COLS).eq('outlet_id', outletId).order('created_at')
   if (!includeInactive) q = q.eq('is_active', true)
   const { data, error } = await q
   if (error) throw new Error(friendlyError(error))
-  return (data ?? []) as Menu[]
+  return (data ?? []) as unknown as Menu[]
 }
 
 /** Ambil catatan harian dalam rentang tanggal (inklusif), dengan paginasi agar tidak terpotong 1000 baris. */

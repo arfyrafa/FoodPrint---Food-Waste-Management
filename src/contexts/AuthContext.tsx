@@ -8,6 +8,8 @@ interface AuthState {
   profile: Profile | null
   outlet: Outlet | null
   loading: boolean
+  /** true setelah user menekan Keluar (dipakai agar diarahkan ke beranda, bukan ke halaman login) */
+  signedOut: boolean
   refresh: () => Promise<void>
   signOut: () => Promise<void>
 }
@@ -19,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [outlet, setOutlet] = useState<Outlet | null>(null)
   const [loading, setLoading] = useState(true)
+  const [signedOut, setSignedOut] = useState(false)
   const userIdRef = useRef<string | undefined>(undefined)
 
   const loadProfile = useCallback(async (userId: string | undefined) => {
@@ -48,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession)
+      if (newSession) setSignedOut(false)
       const newId = newSession?.user.id
       // Muat ulang profil hanya jika user berganti (SIGNED_IN juga terpicu saat tab kembali fokus)
       if (newId !== userIdRef.current) {
@@ -67,13 +71,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(() => loadProfile(session?.user.id), [loadProfile, session?.user.id])
   const signOut = useCallback(async () => {
+    setSignedOut(true)
     await supabase.auth.signOut()
     setProfile(null)
     setOutlet(null)
   }, [])
 
   return (
-    <AuthContext.Provider value={{ session, profile, outlet, loading, refresh, signOut }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ session, profile, outlet, loading, signedOut, refresh, signOut }}>{children}</AuthContext.Provider>
   )
 }
 

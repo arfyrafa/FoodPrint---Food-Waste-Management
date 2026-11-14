@@ -224,3 +224,19 @@ export function AiDisclaimer() {
 export function SimulatedDataNote() {
   return <p className="text-center text-xs text-stone-400">Data pada akun demo adalah data simulasi, bukan data usaha nyata.</p>
 }
+
+/** Kotak ikon berwarna (dipakai seragam di seluruh web). */
+export const TILE_TONES = {
+  green: 'bg-brand-100 text-brand-700',
+  orange: 'bg-accent-100 text-accent-600',
+  amber: 'bg-amber-100 text-amber-700',
+  sky: 'bg-sky-100 text-sky-700',
+  rose: 'bg-rose-100 text-rose-600',
+  violet: 'bg-violet-100 text-violet-700',
+  teal: 'bg-teal-100 text-teal-700',
+} as const
+
+export function IconTile({ children, tone = 'green', size = 'md', className }: { children: ReactNode; tone?: keyof typeof TILE_TONES; size?: 'sm' | 'md' | 'lg'; className?: string }) {
+  const sizes = { sm: 'size-7 rounded-lg [&>svg]:size-4', md: 'size-9 rounded-xl [&>svg]:size-5', lg: 'size-12 rounded-2xl [&>svg]:size-6' }
+  return <span className={cn('grid shrink-0 place-items-center', sizes[size], TILE_TONES[tone], className)}>{children}</span>
+}

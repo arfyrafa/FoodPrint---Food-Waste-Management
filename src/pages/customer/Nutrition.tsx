@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Bot, Camera, CheckCircle2, Lightbulb, NotebookPen, Salad, X } from 'lucide-react'
+import { Camera, CheckCircle2, Lightbulb, NotebookPen, Salad, X } from 'lucide-react'
 import { useToast } from '../../components/Toast'
 import { Alert, Badge, Button, Card, Field, PageHeader, cn } from '../../components/ui'
 import { useAuth } from '../../contexts/AuthContext'
@@ -170,7 +170,7 @@ export default function Nutrition() {
                   <p className="text-lg font-extrabold text-stone-900">{result.food_name}</p>
                   <p className="text-sm text-stone-500">Perkiraan untuk {result.portion}</p>
                 </div>
-                <Badge tone={source === 'ai' ? 'good' : 'warn'}>{source === 'ai' ? <><Bot className="size-3" /> Gemini AI</> : 'Perkiraan cadangan'}</Badge>
+                <Badge tone={source === 'ai' ? 'good' : 'warn'}>{source === 'ai' ? 'Analisis Gemini' : 'Perkiraan cadangan'}</Badge>
               </div>
               {notice && <p className="text-xs font-medium text-amber-700">{notice}</p>}
 

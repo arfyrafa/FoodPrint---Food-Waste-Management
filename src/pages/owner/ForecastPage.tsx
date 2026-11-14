@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { ArrowDownRight, ArrowUpRight, Info, Minus } from 'lucide-react'
 import { AiInsightCard } from '../../components/AiInsight'
 import { Alert, Badge, Card, EmptyState, PageHeader, PageSkeleton, SimulatedDataNote, Stat, cn } from '../../components/ui'
@@ -21,6 +21,8 @@ const emptyInsight: InsightState = { content: null, source: null, notice: '', lo
 export default function ForecastPage() {
   const outlet = useOutlet()
   const location = useLocation()
+  const [params] = useSearchParams()
+  const focusMenu = params.get('menu')
   const today = todayISO()
   const [target, setTarget] = useState<string>(addDays(today, 1))
   const [autoTarget, setAutoTarget] = useState(true)
@@ -87,7 +89,8 @@ export default function ForecastPage() {
 
   useEffect(() => {
     if (location.hash === '#kesimpulan' && data) document.getElementById('kesimpulan')?.scrollIntoView({ behavior: 'smooth' })
-  }, [location.hash, data])
+    if (focusMenu && data) document.getElementById(`menu-${focusMenu}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [location.hash, data, focusMenu])
 
   async function store(kind: 'forecast' | 'daily', date: string, content: AiText, source: 'ai' | 'fallback') {
     await supabase.from('ai_insights').upsert({ outlet_id: outlet.id, insight_date: date, kind, content, source }, { onConflict: 'outlet_id,insight_date,kind' })
@@ -96,7 +99,7 @@ export default function ForecastPage() {
   async function generateExplain() {
     const lite: ForecastRowLite[] = rows.map(({ menu, f }) => ({
       menu: menu.name,
-      predicted_sold: f.predictedSold,
+      predicted_sold: Math.round(f.predictedSold),
       recommended: f.recommended,
       confidence: f.confidence,
       change_pct: f.changePct,
@@ -160,23 +163,23 @@ export default function ForecastPage() {
                 <thead className="bg-stone-50 text-left text-xs font-semibold text-stone-500">
                   <tr>
                     <th className="px-4 py-3">Menu</th>
-                    <th className="px-3 py-3 text-right">Prediksi terjual</th>
-                    <th className="px-3 py-3 text-right">Rekomendasi produksi</th>
-                    <th className="px-3 py-3 text-right">Produksi terakhir</th>
-                    <th className="px-3 py-3">Vs rata-rata</th>
+                    <th className="px-3 py-3 text-right">Perkiraan laku</th>
+                    <th className="px-3 py-3 text-right">Sebaiknya dimasak</th>
+                    <th className="px-3 py-3 text-right">Masak terakhir</th>
+                    <th className="px-3 py-3">Dibanding biasanya</th>
                     <th className="px-4 py-3">Keyakinan</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100">
                   {rows.map(({ menu, f }) => (
-                    <tr key={menu.id}>
+                    <tr key={menu.id} id={`menu-${menu.id}`} className={cn(focusMenu === menu.id && 'bg-accent-50 ring-2 ring-inset ring-accent-300')}>
                       <td className="px-4 py-3">
                         <p className="font-semibold text-stone-900">{menu.name}</p>
                         {f.insufficient && <p className="text-xs font-medium text-amber-700">Data belum cukup, pakai rata-rata keseluruhan</p>}
                       </td>
-                      <td className="px-3 py-3 text-right">{num(f.predictedSold)}</td>
+                      <td className="px-3 py-3 text-right whitespace-nowrap">{Math.round(f.predictedSold)} porsi</td>
                       <td className="px-3 py-3 text-right">
-                        <span className="rounded-lg bg-brand-50 px-2.5 py-1 text-base font-extrabold text-brand-800">{f.recommended}</span>
+                        <span className="rounded-lg bg-brand-50 px-2.5 py-1 text-base font-extrabold whitespace-nowrap text-brand-800">{f.recommended} porsi</span>
                       </td>
                       <td className="px-3 py-3 text-right text-stone-600">
                         {f.lastProduction ?? '-'}
@@ -202,7 +205,7 @@ export default function ForecastPage() {
             </div>
             <p className="flex items-start gap-2 border-t border-stone-100 px-4 py-3 text-xs text-stone-500">
               <Info className="mt-0.5 size-3.5 shrink-0" />
-              Angka dihitung sistem (rata-rata tertimbang maks. 6 data terakhir di hari yang sama, data terbaru berbobot lebih besar, + cadangan 5%). AI hanya menjelaskan, tidak mengubah angka.
+              Semua angka dalam porsi. Dihitung dari penjualan 6 {dayName(target)} terakhir (yang terbaru paling berpengaruh) ditambah cadangan 5%. AI hanya menjelaskan, tidak mengubah angka.
             </p>
           </Card>
 

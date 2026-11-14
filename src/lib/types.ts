@@ -1,7 +1,6 @@
 export type Role = 'owner' | 'customer'
 export type BusinessType = 'kantin' | 'restoran' | 'umkm' | 'katering'
 export type DietGoal = 'seimbang' | 'turun_bb' | 'jaga_bb' | 'naik_otot' | 'rendah_gula' | 'rendah_garam'
-export type FoodCategory = 'karbohidrat' | 'protein' | 'sayur' | 'lauk_lain' | 'minuman' | 'lainnya'
 export type OrderStatus = 'pending' | 'confirmed' | 'picked_up' | 'cancelled'
 export type Confidence = 'tinggi' | 'sedang' | 'rendah'
 
@@ -60,6 +59,8 @@ export interface Menu {
   hpp: number
   unit: string
   is_active: boolean
+  /** data URL foto menu (opsional di data lama, wajib untuk menu baru) */
+  photo_url?: string | null
 }
 
 export interface DailyRecord {
@@ -72,27 +73,17 @@ export interface DailyRecord {
   leftover: number
 }
 
-export interface VisionItem {
-  name: string
-  category: FoodCategory
-  estimated_portions: number
-  confidence: number
-}
-
-export interface VisionResult {
+/** Hasil AI Vision: analisis gizi & kelayakan satu makanan dari foto. */
+export interface FoodScanResult {
   is_food: boolean
-  items: VisionItem[]
+  food_name: string
+  portion: string
+  calories: number
+  composition: { protein_pct: number; carbs_pct: number; fat_pct: number; fiber_pct: number }
+  micronutrients: { name: string; akg_pct: number }[]
+  safety: { status: 'layak' | 'periksa' | 'tidak_layak'; confidence: number; signs: string[]; advice: string }
+  sugar_level: 'rendah' | 'sedang' | 'tinggi'
   notes: string
-}
-
-export interface WasteLog {
-  id: string
-  outlet_id: string
-  log_date: string
-  source: 'manual' | 'ai_vision'
-  items: (VisionItem & { menu_id?: string | null })[]
-  notes: string | null
-  created_at: string
 }
 
 export interface SurplusListing {
@@ -109,6 +100,7 @@ export interface SurplusListing {
   safety_confirmed: boolean
   is_active: boolean
   created_at: string
+  photo_url: string | null
 }
 
 export interface PublicSurplus {
@@ -126,6 +118,7 @@ export interface PublicSurplus {
   business_type: BusinessType
   address: string | null
   whatsapp: string | null
+  photo_url: string | null
 }
 
 export interface Order {
@@ -185,15 +178,6 @@ export const DIET_GOAL_LABEL: Record<DietGoal, string> = {
   naik_otot: 'Naik massa otot',
   rendah_gula: 'Kurangi gula',
   rendah_garam: 'Kurangi garam',
-}
-
-export const CATEGORY_LABEL: Record<FoodCategory, string> = {
-  karbohidrat: 'Karbohidrat',
-  protein: 'Protein',
-  sayur: 'Sayur',
-  lauk_lain: 'Lauk lain',
-  minuman: 'Minuman',
-  lainnya: 'Lainnya',
 }
 
 export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {

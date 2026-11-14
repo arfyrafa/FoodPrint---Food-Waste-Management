@@ -77,3 +77,14 @@ describe('fallback', () => {
     expect(nutritionFallback('sesuatu aneh', 'seimbang')).toBeNull()
   })
 })
+
+import { toPoints } from '../components/AiInsight'
+describe('toPoints', () => {
+  it('memecah kalimat tanpa memecah angka', () => {
+    expect(toPoints('Untuk hari Senin, total 235 porsi. Biaya Rp 1.500 per porsi turun 2,5%. Data Es Teh belum cukup.')).toEqual([
+      'Untuk hari Senin, total 235 porsi',
+      'Biaya Rp 1.500 per porsi turun 2,5%',
+      'Data Es Teh belum cukup',
+    ])
+  })
+})

@@ -1,18 +1,20 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, BarChart3, Camera, HeartHandshake, Salad, Sparkles, Store, UtensilsCrossed } from 'lucide-react'
+import { Apple, ArrowRight, ChartPie, ChefHat, HandPlatter, HeartHandshake, ScanLine, UtensilsCrossed } from 'lucide-react'
+import { IconTile } from '../../components/ui'
 import { Logo, ConfigWarning, homeFor } from '../../components/Layouts'
 import { useAuth } from '../../contexts/AuthContext'
 
 const OWNER_FEATURES = [
-  { icon: Sparkles, title: 'Prediksi produksi besok', text: 'Rekomendasi porsi per menu dari pola penjualan hari yang sama, lengkap dengan penjelasan AI.' },
-  { icon: Camera, title: 'AI Vision sisa makanan', text: 'Foto sisa makanan, AI mengenali kategori (karbohidrat, protein, sayur) dan perkiraan porsi.' },
-  { icon: BarChart3, title: 'Dashboard untung & rugi', text: 'Lihat porsi terbuang, kerugian Rupiah, dan laba tiap menu dalam satu layar.' },
-  { icon: HeartHandshake, title: 'Salurkan makanan surplus', text: 'Pasang sisa yang masih layak dengan harga miring, lengkap dengan checklist keamanan pangan.' },
+  { icon: ChefHat, tone: 'orange' as const, title: 'Prediksi produksi besok', text: 'Rekomendasi porsi per menu dari pola penjualan hari yang sama, lengkap dengan penjelasan AI.' },
+  { icon: ScanLine, tone: 'sky' as const, title: 'AI Vision cek makanan', text: 'Foto satu makanan, Gemini menghitung komposisi protein, karbohidrat, lemak, vitamin, dan menilai apakah masih layak dimakan.' },
+  { icon: ChartPie, tone: 'green' as const, title: 'Dashboard untung & rugi', text: 'Lihat porsi terbuang, kerugian Rupiah, dan laba tiap menu dalam satu layar.' },
+  { icon: HandPlatter, tone: 'rose' as const, title: 'Salurkan makanan surplus', text: 'Pasang sisa yang masih layak dengan harga miring, lengkap dengan checklist keamanan pangan.' },
 ]
 
 export default function Landing() {
-  const { session, profile } = useAuth()
+  const { session, profile, signOut } = useAuth()
   const home = session && profile ? homeFor(profile.role) : null
+  const homeLabel = profile?.role === 'owner' ? 'Ke Dashboard' : 'Ke Beranda'
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-50 via-cream to-cream">
@@ -22,7 +24,13 @@ export default function Landing() {
         <nav className="flex items-center gap-2">
           <Link to="/surplus" className="hidden rounded-lg px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-white sm:block">Surplus Food</Link>
           {home ? (
-            <Link to={home} className="rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-800">Buka aplikasi</Link>
+            <>
+              <span className="hidden text-sm text-stone-600 md:inline">
+                Masuk sebagai <b>{profile?.role === 'owner' ? 'admin restoran' : 'customer'}</b>
+              </span>
+              <button onClick={() => signOut()} className="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-white">Keluar</button>
+              <Link to={home} className="rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-800">{homeLabel}</Link>
+            </>
           ) : (
             <>
               <Link to="/login" className="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-white">Masuk</Link>
@@ -49,8 +57,8 @@ export default function Landing() {
             <Link to="/login?demo=owner" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-700 px-5 font-semibold text-white hover:bg-brand-800">
               Coba demo admin restoran <ArrowRight className="size-4" />
             </Link>
-            <Link to="/surplus" className="inline-flex h-12 items-center gap-2 rounded-xl border border-stone-300 bg-white px-5 font-semibold text-stone-800 hover:bg-stone-50">
-              <Store className="size-4" /> Lihat makanan surplus
+            <Link to="/surplus" className="inline-flex h-12 items-center gap-2.5 rounded-xl border border-stone-300 bg-white pr-5 pl-2.5 font-semibold text-stone-800 hover:bg-stone-50">
+              <IconTile tone="rose" size="sm"><HandPlatter /></IconTile> Lihat makanan surplus
             </Link>
           </div>
         </div>
@@ -65,7 +73,7 @@ export default function Landing() {
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {OWNER_FEATURES.map((f) => (
             <div key={f.title} className="card p-5">
-              <span className="grid size-11 place-items-center rounded-xl bg-brand-50 text-brand-700"><f.icon className="size-5" /></span>
+              <IconTile tone={f.tone} size="lg"><f.icon /></IconTile>
               <h3 className="mt-3 font-bold text-stone-900">{f.title}</h3>
               <p className="mt-1 text-sm text-stone-600">{f.text}</p>
             </div>
@@ -89,8 +97,8 @@ export default function Landing() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-2xl bg-white/10 p-4"><HeartHandshake className="mb-2 size-5 text-accent-300" />Harga miring, bahkan gratis</div>
-            <div className="rounded-2xl bg-white/10 p-4"><Salad className="mb-2 size-5 text-accent-300" />Cek gizi & kecocokan diet dengan AI</div>
+            <div className="rounded-2xl bg-white/10 p-4"><IconTile tone="rose" className="mb-2"><HeartHandshake /></IconTile>Harga miring, bahkan gratis</div>
+            <div className="rounded-2xl bg-white/10 p-4"><IconTile tone="green" className="mb-2"><Apple /></IconTile>Cek gizi & kecocokan diet dengan AI</div>
           </div>
         </div>
       </section>

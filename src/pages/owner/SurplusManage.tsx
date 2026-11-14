@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
-import { Clock, EyeOff, PackageOpen, Plus, RotateCcw } from 'lucide-react'
+import { useState } from 'react'
+import { Clock, EyeOff, PackageOpen, Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { MenuAvatar } from '../../components/MenuAvatar'
 import { useToast } from '../../components/Toast'
-import { Alert, Badge, Button, Card, EmptyState, PageHeader, PageSkeleton } from '../../components/ui'
+import { Alert, Badge, Button, Card, EmptyState, Modal, PageHeader, PageSkeleton } from '../../components/ui'
 import { useOutlet } from '../../contexts/AuthContext'
 import { useAsync } from '../../lib/data'
 import { formatDateTime, rupiah, timeLeft } from '../../lib/format'
@@ -16,6 +18,20 @@ export default function SurplusManage() {
     if (err) throw new Error(friendlyError(err))
     return (rows ?? []) as SurplusListing[]
   }, [outlet.id])
+
+  const [toDelete, setToDelete] = useState<SurplusListing | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
+  async function remove() {
+    if (!toDelete) return
+    setDeleting(true)
+    const { error: err } = await supabase.from('surplus_listings').delete().eq('id', toDelete.id)
+    setDeleting(false)
+    if (err) return toast(friendlyError(err), 'error')
+    toast(`"${toDelete.title}" dihapus.`)
+    setToDelete(null)
+    reload()
+  }
 
   async function deactivate(l: SurplusListing) {
     const { error: err } = await supabase.from('surplus_listings').update({ is_active: false }).eq('id', l.id)
@@ -63,10 +79,17 @@ export default function SurplusManage() {
       <div className="grid gap-3 sm:grid-cols-2">
         {data?.map((l) => (
           <Card key={l.id} className="p-4">
-            <div className="flex items-start justify-between gap-2">
-              <p className="font-bold text-stone-900">{l.title}</p>
-              {status(l)}
-            </div>
+            <div className="flex items-start gap-3">
+              {l.photo_url ? (
+                <img src={l.photo_url} alt={l.title} className="size-16 shrink-0 rounded-xl object-cover ring-1 ring-black/5" />
+              ) : (
+                <MenuAvatar name={l.title} className="size-16" />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="font-bold text-stone-900">{l.title}</p>
+                  {status(l)}
+                </div>
             <p className="mt-1 text-sm text-stone-600">
               {l.price === 0 ? <b className="text-brand-700">Gratis</b> : <b>{rupiah(l.price)}</b>}
               {l.original_price ? <span className="ml-1 text-stone-400 line-through">{rupiah(l.original_price)}</span> : null}
@@ -75,16 +98,34 @@ export default function SurplusManage() {
             <p className="mt-1 flex items-center gap-1.5 text-xs text-stone-500">
               <Clock className="size-3.5" /> Ambil sebelum {formatDateTime(l.pickup_until)} ({timeLeft(l.pickup_until)})
             </p>
-            <div className="mt-3 flex gap-2">
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
               {l.is_active ? (
                 <Button size="sm" variant="outline" icon={<EyeOff className="size-4" />} onClick={() => deactivate(l)}>Sembunyikan</Button>
               ) : (
                 <Button size="sm" variant="outline" icon={<RotateCcw className="size-4" />} onClick={() => reactivate(l)}>Tayangkan lagi</Button>
               )}
+              <Button size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" icon={<Trash2 className="size-4" />} onClick={() => setToDelete(l)}>
+                Hapus
+              </Button>
             </div>
           </Card>
         ))}
       </div>
+      <Modal open={Boolean(toDelete)} onClose={() => setToDelete(null)} title="Hapus listing?">
+        {toDelete && (
+          <div className="space-y-4">
+            <p className="text-stone-700">
+              Listing <b>{toDelete.title}</b> akan dihapus permanen dan hilang dari halaman Surplus Food. Pesanan yang sudah masuk tetap tersimpan di halaman Pesanan.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setToDelete(null)}>Batal</Button>
+              <Button variant="danger" loading={deleting} icon={<Trash2 className="size-4" />} onClick={remove}>Hapus</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

@@ -54,6 +54,8 @@ create table if not exists public.menus (
   unique (id, outlet_id)
 );
 create index if not exists menus_outlet_idx on public.menus(outlet_id);
+-- foto menu (data URL JPEG yang sudah dikecilkan di browser, maks ~300 KB)
+alter table public.menus add column if not exists photo_url text check (photo_url is null or length(photo_url) < 400000);
 
 -- ---------------------------------------------------------------------
 -- 4. DAILY RECORDS (produksi, terjual, sisa per menu per hari)
@@ -75,18 +77,11 @@ create table if not exists public.daily_records (
 create index if not exists daily_records_outlet_date_idx on public.daily_records(outlet_id, record_date);
 
 -- ---------------------------------------------------------------------
--- 5. WASTE LOGS (hasil AI Vision / input manual)
+-- 5. (dihapus) WASTE LOGS
+-- AI Vision tidak menyimpan riwayat: hasil scan hanya mengisi kolom sisa di daily_records.
+-- Baris ini membersihkan tabel lama jika schema versi sebelumnya pernah dijalankan.
 -- ---------------------------------------------------------------------
-create table if not exists public.waste_logs (
-  id          uuid primary key default gen_random_uuid(),
-  outlet_id   uuid not null references public.outlets(id) on delete cascade,
-  log_date    date not null default current_date,
-  source      text not null check (source in ('manual','ai_vision')),
-  items       jsonb not null default '[]'::jsonb,
-  notes       text,
-  created_at  timestamptz not null default now()
-);
-create index if not exists waste_logs_outlet_idx on public.waste_logs(outlet_id, log_date);
+drop table if exists public.waste_logs cascade;
 
 -- ---------------------------------------------------------------------
 -- 6. SURPLUS LISTINGS (makanan surplus yang dijual murah / gratis)
@@ -112,6 +107,8 @@ create table if not exists public.surplus_listings (
   foreign key (menu_id, outlet_id) references public.menus(id, outlet_id) on delete set null (menu_id)
 );
 create index if not exists surplus_outlet_idx on public.surplus_listings(outlet_id);
+-- foto produk sisa hari itu (wajib di form, data URL JPEG kecil)
+alter table public.surplus_listings add column if not exists photo_url text check (photo_url is null or length(photo_url) < 400000);
 
 -- ---------------------------------------------------------------------
 -- 7. ORDERS (pesanan customer atas listing surplus, bayar saat ambil)
@@ -328,9 +325,11 @@ end; $$;
 create or replace view public.public_surplus as
 select s.id, s.title, s.remaining_qty, s.quantity, s.price, s.original_price,
        s.pickup_until, s.location_note, s.created_at,
-       o.id as outlet_id, o.business_name, o.business_type, o.address, o.whatsapp
+       o.id as outlet_id, o.business_name, o.business_type, o.address, o.whatsapp,
+       coalesce(s.photo_url, m.photo_url) as photo_url   -- foto listing, cadangan foto menu
 from public.surplus_listings s
 join public.outlets o on o.id = s.outlet_id
+left join public.menus m on m.id = s.menu_id
 where s.is_active and s.safety_confirmed and s.pickup_until > now() and s.remaining_qty > 0;
 
 -- =====================================================================
@@ -340,7 +339,6 @@ alter table public.profiles          enable row level security;
 alter table public.outlets           enable row level security;
 alter table public.menus             enable row level security;
 alter table public.daily_records     enable row level security;
-alter table public.waste_logs        enable row level security;
 alter table public.surplus_listings  enable row level security;
 alter table public.orders            enable row level security;
 alter table public.ai_usage          enable row level security;
@@ -362,17 +360,13 @@ drop policy if exists outlets_owner_all on public.outlets;
 create policy outlets_owner_all on public.outlets for all
   using (owner_id = auth.uid()) with check (owner_id = auth.uid());
 
--- menus, daily_records, waste_logs, surplus_listings, ai_insights: milik outlet sendiri
+-- menus, daily_records, surplus_listings, ai_insights: milik outlet sendiri
 drop policy if exists menus_owner_all on public.menus;
 create policy menus_owner_all on public.menus for all
   using (public.owns_outlet(outlet_id)) with check (public.owns_outlet(outlet_id));
 
 drop policy if exists daily_owner_all on public.daily_records;
 create policy daily_owner_all on public.daily_records for all
-  using (public.owns_outlet(outlet_id)) with check (public.owns_outlet(outlet_id));
-
-drop policy if exists waste_owner_all on public.waste_logs;
-create policy waste_owner_all on public.waste_logs for all
   using (public.owns_outlet(outlet_id)) with check (public.owns_outlet(outlet_id));
 
 drop policy if exists surplus_owner_all on public.surplus_listings;

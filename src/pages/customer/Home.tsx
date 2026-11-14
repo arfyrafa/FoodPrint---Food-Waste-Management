@@ -1,9 +1,9 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { ArrowDownRight, ArrowUpRight, CalendarCheck, Lightbulb, Minus, Pencil, Salad, Scale, ShoppingBag, Target, Trash2 } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, CalendarCheck, Lightbulb, Minus, Pencil, Salad, Scale, Target, Trash2, Utensils, ChartColumn, HandPlatter } from 'lucide-react'
 import { DietMetricChart, WeightChart } from '../../components/charts'
 import { useToast } from '../../components/Toast'
-import { Alert, Badge, Button, Card, EmptyState, PageSkeleton, cn } from '../../components/ui'
+import { Alert, Badge, Button, Card, EmptyState, IconTile, PageSkeleton, cn } from '../../components/ui'
 import { useAuth } from '../../contexts/AuthContext'
 import { useAsync } from '../../lib/data'
 import { GOALS, dailyTotals, metricTrend, onTarget, weightProgress } from '../../lib/diet'
@@ -103,7 +103,7 @@ export default function CustomerHome() {
         {/* Hari ini */}
         <Card className="p-4 sm:p-5">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="font-bold text-stone-900">Hari ini</h2>
+            <h2 className="flex items-center gap-2.5 font-bold text-stone-900"><IconTile tone="amber" size="sm"><Utensils /></IconTile> Hari ini</h2>
             <span className="text-xs text-stone-500">{formatDateLong(today)}</span>
           </div>
           <div className="mt-3 flex items-end justify-between gap-2">
@@ -139,7 +139,7 @@ export default function CustomerHome() {
 
         {/* Tren 7 hari */}
         <Card className="p-4 sm:p-5">
-          <h2 className="font-bold text-stone-900">Progres {cfg.metricLabel.toLowerCase()} 14 hari</h2>
+          <h2 className="flex items-center gap-2.5 font-bold text-stone-900"><IconTile tone="green" size="sm"><ChartColumn /></IconTile> {cfg.metricLabel} harian · 14 hari terakhir</h2>
           {t.daysLogged === 0 ? (
             <EmptyState icon={<Salad className="size-6" />} title="Belum ada catatan makan">Cek gizi makananmu lalu klik "Catat ke makanan hari ini" untuk mulai melihat progres.</EmptyState>
           ) : (
@@ -170,7 +170,7 @@ export default function CustomerHome() {
                 </p>
               )}
               <div className="mt-3">
-                <DietMetricChart days={view.days} metric={cfg.metric} unit={cfg.unit} label={cfg.metricLabel} target={target} />
+                <DietMetricChart days={view.days} metric={cfg.metric} unit={cfg.unit} label={cfg.metricLabel} target={target} better={cfg.better} />
               </div>
             </>
           )}
@@ -181,7 +181,7 @@ export default function CustomerHome() {
         <Card className="p-4 sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="flex items-center gap-2 font-bold text-stone-900"><Scale className="size-4" /> Berat badan</h2>
+              <h2 className="flex items-center gap-2.5 font-bold text-stone-900"><IconTile tone="sky" size="sm"><Scale /></IconTile> Berat badan</h2>
               {view.weight.latest !== null ? (
                 <p className="mt-1 text-sm text-stone-600">
                   Sekarang <b className="text-stone-900">{num(view.weight.latest)} kg</b>
@@ -216,7 +216,7 @@ export default function CustomerHome() {
       )}
 
       <Link to="/surplus" className="card flex items-center gap-3 p-4 hover:bg-stone-50">
-        <span className="grid size-11 place-items-center rounded-xl bg-accent-50 text-accent-600"><ShoppingBag className="size-5" /></span>
+        <IconTile tone="rose" size="lg"><HandPlatter /></IconTile>
         <span className="flex-1">
           <span className="block font-bold text-stone-900">Makanan surplus hari ini</span>
           <span className="block text-sm text-stone-600">Hemat sekaligus bantu kurangi food waste. Cek gizinya sebelum pesan.</span>

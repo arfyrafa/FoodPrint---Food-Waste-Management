@@ -105,7 +105,7 @@ function buildSeed(): Db {
       })
     }
   }
-  return { users, profiles, outlets, menus, daily_records, waste_logs: [], surplus_listings, orders, food_logs, weight_logs, ai_usage: [], ai_insights: [], _meta: [{ seeded: today }] }
+  return { users, profiles, outlets, menus, daily_records, surplus_listings, orders, food_logs, weight_logs, ai_usage: [], ai_insights: [], _meta: [{ seeded: today }] }
 }
 
 function loadDb(): Db {
@@ -200,6 +200,32 @@ const auth = {
     writeSession(null)
     return { error: null }
   },
+  /** Mode demo: email tidak benar-benar dikirim. Selalu sukses agar tidak membocorkan email terdaftar. */
+  async resetPasswordForEmail(_email: string, _opts?: { redirectTo?: string }) {
+    await new Promise((r) => setTimeout(r, 300))
+    return { data: {}, error: null }
+  },
+  async updateUser(attrs: { password?: string }) {
+    const s = readSession()
+    if (!s) return { data: { user: null }, error: err('Auth session missing!') }
+    const user = db.users.find((u) => u.id === s.user.id)
+    if (!user) return { data: { user: null }, error: err('User not found') }
+    if (attrs.password !== undefined) {
+      if (attrs.password.length < 6) return { data: { user: null }, error: err('Password should be at least 6 characters') }
+      if (attrs.password === user.password) return { data: { user: null }, error: err('New password should be different from the old password.') }
+      user.password = attrs.password
+      persist()
+    }
+    return { data: { user: s.user }, error: null }
+  },
+}
+
+/** Mode demo: meniru klik link reset di email (langsung masuk sesi pemulihan). */
+export function startDemoRecovery(email: string): boolean {
+  const user = db.users.find((u) => u.email.toLowerCase() === email.toLowerCase())
+  if (!user) return false
+  writeSession({ access_token: `demo-${user.id}`, user: { id: user.id, email: user.email } })
+  return true
 }
 
 // ---------------- Row Level Security sederhana ----------------
@@ -228,11 +254,19 @@ function publicSurplus(): Row[] {
         id: s.id, title: s.title, remaining_qty: s.remaining_qty, quantity: s.quantity, price: s.price, original_price: s.original_price,
         pickup_until: s.pickup_until, location_note: s.location_note, created_at: s.created_at,
         outlet_id: o.id, business_name: o.business_name, business_type: o.business_type, address: o.address, whatsapp: o.whatsapp,
+        photo_url: s.photo_url ?? db.menus.find((m) => m.id === s.menu_id)?.photo_url ?? null,
       }
     })
 }
 
 // ---------------- Query builder ----------------
+/** Nilai default kolom (meniru DEFAULT di schema.sql). */
+const TABLE_DEFAULTS: Record<string, Row> = {
+  menus: { is_active: true, unit: 'porsi', photo_url: null },
+  surplus_listings: { is_active: true, safety_confirmed: false, price: 0, menu_id: null, photo_url: null },
+  food_logs: { portion: null, verdict: null, score: null, calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0, sugar_g: 0, sodium_mg: 0 },
+}
+
 type Filter = (r: Row) => boolean
 type Result = { data: any; error: { message: string } | null; count?: number | null }
 
@@ -253,9 +287,13 @@ class Query implements PromiseLike<Result> {
     this.table = table
   }
 
-  select(_cols?: string, opts?: { count?: string; head?: boolean }) {
+  private cols: string[] | null = null
+
+  select(cols?: string, opts?: { count?: string; head?: boolean }) {
     if (this.mode !== 'select') this.returning = true
     if (opts?.head) this.headCount = true
+    // dukung pemilihan kolom sederhana ("a, b, c"); "*" = semua kolom
+    if (cols && cols.trim() !== '*' && !cols.includes('(')) this.cols = cols.split(',').map((c) => c.trim())
     return this
   }
   insert(values: Row | Row[]) { this.mode = 'insert'; this.payload = values; return this }
@@ -299,6 +337,10 @@ class Query implements PromiseLike<Result> {
   }
 
   private finish(rows: Row[]): Result {
+    if (this.cols) {
+      const cols = this.cols
+      rows = rows.map((r) => Object.fromEntries(cols.filter((c) => c in r).map((c) => [c, r[c]])))
+    }
     let data: any = rows
     if (this.single_) {
       if (rows.length > 1) return { data: null, error: err('Lebih dari satu baris') }
@@ -360,6 +402,7 @@ class Query implements PromiseLike<Result> {
       const row = {
         id: uid(),
         created_at: nowIso(),
+        ...(TABLE_DEFAULTS[this.table] ?? {}),
         ...(this.table === 'daily_records' ? { updated_at: nowIso() } : {}),
         ...(['food_logs', 'weight_logs'].includes(this.table) ? { user_id: currentUserId(), log_date: wibToday() } : {}),
         ...values,

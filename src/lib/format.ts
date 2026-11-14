@@ -70,3 +70,26 @@ export function waLink(phone: string | null | undefined, text: string): string |
   if (digits.length < 9) return null
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
 }
+
+// ---------- Bulan ----------
+/** "2026-11-14" -> "2026-11-01" */
+export const monthStart = (iso: string) => `${iso.slice(0, 7)}-01`
+
+/** Tanggal terakhir bulan tersebut. */
+export function monthEnd(iso: string): string {
+  const d = new Date(`${monthStart(iso)}T00:00:00Z`)
+  d.setUTCMonth(d.getUTCMonth() + 1)
+  d.setUTCDate(0)
+  return d.toISOString().slice(0, 10)
+}
+
+export function addMonths(iso: string, n: number): string {
+  const d = new Date(`${monthStart(iso)}T00:00:00Z`)
+  d.setUTCMonth(d.getUTCMonth() + n)
+  return d.toISOString().slice(0, 10)
+}
+
+/** "2026-11-01" -> "November 2026" */
+export function formatMonth(iso: string): string {
+  return new Date(`${monthStart(iso)}T00:00:00Z`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+}

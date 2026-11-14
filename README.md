@@ -15,25 +15,28 @@ Tim **Techtonic ampe Wisuda** · IT RUSH 2026 (Web Development) · Subtema Lingk
 | Fitur | Keterangan |
 |---|---|
 | Login per usaha | Satu akun = satu outlet. Data antar akun terpisah lewat Row Level Security (akun A tidak bisa melihat data akun B). |
-| Manajemen menu | Harga jual & HPP per porsi, untung per porsi, menu bisa dinonaktifkan (soft delete) tanpa menghapus riwayat. |
-| Catatan harian | Diproduksi, terjual, sisa per menu per tanggal. Sisa dihitung otomatis jika kosong, atau diisi dari foto (AI Vision). |
-| AI Vision | Foto sisa makanan → Gemini mengenali kategori (karbohidrat, protein, sayur, lauk lain, minuman) & perkiraan porsi. Hasil bisa diedit, dikaitkan ke menu, dan mengisi kolom sisa hari ini (dipakai prediksi besok). Tanpa riwayat: foto & hasil scan tidak disimpan, hanya tampil hari itu. |
+| Manajemen menu | Foto menu (wajib, dari kamera/galeri, otomatis dikecilkan), harga jual & modal (HPP) per porsi, menu bisa dinonaktifkan (soft delete) tanpa menghapus riwayat. Foto tampil juga di Surplus Food. |
+| Catatan harian | Isi diproduksi & terjual per menu per tanggal; **sisa (diproduksi − terjual) dan rugi per menu dihitung otomatis**. |
+| AI Vision | Foto satu makanan → Gemini menganalisis komposisi gizi (protein, karbohidrat, lemak, serat dalam %), vitamin & mineral (% AKG), dan kelayakan makan (layak / perlu dicek / tidak layak) beserta tanda yang terlihat dan saran penyimpanan. Foto & hasil tidak disimpan. |
 | Prediksi produksi | Algoritma deterministik (rata-rata tertimbang hari yang sama + cadangan 5%), default ke hari operasional berikutnya. Gemini menjelaskan angka (tidak mengubahnya). |
 | Kesimpulan harian AI | Ringkasan hari terakhir: waste vs rata-rata 30 hari, menu paling rugi, 2-3 saran untuk besok. |
-| Dashboard | Laporan hari ini, porsi terbuang, kerugian Rp (sisa × HPP), % waste, potensi hemat, omzet, laba, grafik untung vs rugi **seluruh menu**, tren waste harian, waste per hari dalam seminggu, tabel menu paling boros, ekspor CSV. |
-| Surplus Food | Pasang sisa layak dengan harga miring/gratis + checklist keamanan pangan wajib. Otomatis hilang setelah batas waktu ambil atau stok habis. |
-| Pesanan masuk | Konfirmasi → sudah diambil / batalkan (stok kembali otomatis), tombol WhatsApp ke customer. |
+| Dashboard | Ringkasan per bulan (kalender pilihan bulan), laporan hari ini, porsi terbuang, kerugian Rp (sisa × HPP), % waste, potensi hemat, omzet, laba, grafik untung vs rugi **seluruh menu**, tren waste harian, waste per hari dalam seminggu, tabel menu paling boros, ekspor CSV. |
+| Surplus Food | Pasang sisa layak dengan harga miring/gratis + **foto produk sisa hari itu (wajib)** + checklist keamanan pangan wajib. Otomatis hilang setelah batas waktu ambil atau stok habis. |
+| Pesanan masuk | Scan barcode / ketik kode pesanan untuk menandai sudah diambil, konfirmasi / batalkan (stok kembali otomatis), tombol WhatsApp ke customer. |
 
 ### Customer (role `customer`)
 | Fitur | Keterangan |
 |---|---|
 | Pertanyaan tujuan | Saat login pertama, customer memilih tujuan (turun BB, kurangi gula, naik otot, jaga BB, kurangi garam, seimbang) dan target harian. |
 | Beranda progres diet | Fokus tujuan, total hari ini vs target, tren 7 hari vs minggu lalu (naik/turun), hari sesuai target, grafik 14 hari, berat badan & progres menuju target. |
-| Surplus Food | Cari & pesan makanan surplus (bayar di tempat saat ambil), kode pengambilan, batalkan pesanan yang masih menunggu. |
+| Surplus Food | Cari & pesan makanan surplus (bayar di tempat saat ambil), barcode pengambilan (Code 128), batalkan pesanan yang masih menunggu. |
 | Cek Gizi AI | Nama dan/atau foto makanan → perkiraan kalori, protein, karbohidrat, lemak, serat, gula, natrium + penilaian cocok/tidak untuk tujuan diet, lalu bisa dicatat ke makanan hari ini. |
 | Profil | Nomor WhatsApp, tujuan diet, catatan makanan (dipakai Cek Gizi). |
 
 Halaman `/surplus` bisa dibuka **tanpa login** (hanya lihat). Memesan butuh akun customer.
+
+### Akun
+- Daftar, masuk, keluar, dan **lupa password** (link reset dikirim ke email lewat Supabase Auth, lalu buat password baru di `/reset-password`).
 
 ### Keandalan
 - Semua fitur AI punya **fallback berbasis aturan**: penjelasan/kesimpulan template & tabel gizi cadangan, sehingga tidak ada halaman kosong saat Gemini error atau kuota habis.
@@ -87,7 +90,8 @@ npx vercel dev            # frontend + /api (butuh Vercel CLI)
 ### 4. Deploy ke Vercel
 1. Push repo ke GitHub (public), import di Vercel (framework: Vite).
 2. Isi **Environment Variables**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `AI_DAILY_LIMIT`, dan (opsional) `VITE_DEMO_*`.
-3. Supabase → Authentication → URL Configuration: isi Site URL dengan URL Vercel.
+3. Supabase → Authentication → URL Configuration: isi **Site URL** dengan URL Vercel, lalu tambahkan **Redirect URLs** `https://<url-vercel>/reset-password` dan `http://localhost:5173/reset-password` (untuk fitur lupa password).
+   Catatan: email bawaan Supabase dibatasi beberapa email per jam; cukup untuk demo.
 4. Uji fallback: ganti `GEMINI_API_KEY` dengan nilai salah → halaman Prediksi & Cek Gizi tetap menampilkan hasil cadangan.
 
 > Supabase free tier bisa *pause* jika tidak aktif. Buka project secara berkala sampai 30 November 2026.

@@ -5,7 +5,7 @@ Satu sumber kebenaran untuk README, proposal bagian 2.5, dan Surat Pernyataan. P
 ## A. AI di dalam aplikasi
 | Fitur | Model | Fungsi | Batasan |
 |---|---|---|---|
-| AI Vision sisa makanan (`api/vision.ts`) | Google Gemini Flash (env `GEMINI_MODEL`) | Mengenali jenis, kategori, dan perkiraan porsi sisa makanan dari foto | Hasil wajib bisa diedit user; foto tidak disimpan |
+| AI Vision (`api/vision.ts`) | Google Gemini Flash (env `GEMINI_MODEL`) | Menganalisis satu makanan dari foto: komposisi gizi (%), vitamin & mineral (% AKG), kelayakan makan | Perkiraan; kelayakan hanya dari tanda visual; foto tidak disimpan |
 | Penjelasan prediksi (`api/explain.ts`, mode forecast) | Gemini Flash | Menjelaskan angka rekomendasi produksi | Angka dihitung algoritma deterministik; AI dilarang mengubah/menambah angka |
 | Kesimpulan harian (`api/explain.ts`, mode daily) | Gemini Flash | Merangkum produksi, sisa, kerugian satu hari + saran | Hanya memakai angka yang diberikan |
 | Cek Gizi (`api/nutrition.ts`) | Gemini Flash | Perkiraan gizi & kecocokan dengan tujuan diet | Perkiraan, bukan saran medis (disclaimer di UI) |

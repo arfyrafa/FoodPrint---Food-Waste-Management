@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Candy, Dumbbell, HeartPulse, Scale, Soup, TrendingDown } from 'lucide-react'
-import { Logo } from '../../components/Layouts'
+import { ArrowRight, Candy, Dumbbell, HeartPulse, Scale, Soup, TrendingDown } from 'lucide-react'
+import { BackLink, Logo } from '../../components/Layouts'
 import { Alert, Button, Field, cn } from '../../components/ui'
 import { useAuth } from '../../contexts/AuthContext'
 import { GOALS } from '../../lib/diet'
@@ -18,11 +18,20 @@ const ICONS: Record<DietGoal, React.ReactNode> = {
   seimbang: <HeartPulse className="size-6" />,
 }
 
+const TILE: Record<DietGoal, string> = {
+  turun_bb: 'bg-sky-100 text-sky-700',
+  rendah_gula: 'bg-rose-100 text-rose-600',
+  naik_otot: 'bg-accent-100 text-accent-600',
+  jaga_bb: 'bg-brand-100 text-brand-700',
+  rendah_garam: 'bg-amber-100 text-amber-700',
+  seimbang: 'bg-violet-100 text-violet-700',
+}
+
 const ORDER: DietGoal[] = ['turun_bb', 'rendah_gula', 'naik_otot', 'jaga_bb', 'rendah_garam', 'seimbang']
 
 /** Pertanyaan tujuan diet saat customer pertama kali login (atau saat mengubah tujuan). */
 export default function Onboarding() {
-  const { profile, refresh } = useAuth()
+  const { profile, refresh, signOut } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState<1 | 2>(1)
   const [goal, setGoal] = useState<DietGoal>(profile?.diet_goal ?? 'turun_bb')
@@ -79,14 +88,34 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-50 to-cream px-4 py-6">
       <div className="mx-auto max-w-2xl">
-        <div className="mb-6 flex items-center justify-between">
-          <Logo size="sm" to="/home" />
-          <span className="text-sm font-semibold text-stone-500">Langkah {step} dari 2</span>
+        <div className="mb-6 flex items-center justify-between gap-2">
+          <div className="-ml-2.5">
+            {step === 2 ? (
+              <BackLink label="Kembali" onClick={() => setStep(1)} />
+            ) : profile?.onboarded ? (
+              <BackLink to="/home" label="Kembali ke beranda" />
+            ) : (
+              <BackLink to="/" label="Kembali" />
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-stone-500">Langkah {step} dari 2</span>
+            <button
+              onClick={async () => {
+                navigate('/')
+                await signOut()
+              }}
+              className="rounded-lg px-2.5 py-1.5 text-sm font-semibold text-stone-600 hover:bg-white"
+            >
+              Keluar
+            </button>
+          </div>
         </div>
 
         {step === 1 ? (
           <div className="fade-in">
-            <h1 className="text-2xl font-extrabold text-brand-900 sm:text-3xl">
+            <Logo size="sm" to={profile?.onboarded ? '/home' : '/'} />
+            <h1 className="mt-4 text-2xl font-extrabold text-brand-900 sm:text-3xl">
               {firstTime ? `Halo${profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''}! Apa tujuan makanmu?` : 'Ubah tujuan makanmu'}
             </h1>
             <p className="mt-2 text-stone-600">FoodPrint akan memfokuskan dashboard, cek gizi, dan progresmu sesuai tujuan ini.</p>
@@ -102,7 +131,7 @@ export default function Onboarding() {
                     goal === g ? 'border-brand-600 bg-brand-50' : 'border-stone-200 hover:border-stone-300',
                   )}
                 >
-                  <span className={cn('grid size-11 shrink-0 place-items-center rounded-xl', goal === g ? 'bg-brand-700 text-white' : 'bg-stone-100 text-stone-600')}>{ICONS[g]}</span>
+                  <span className={cn('grid size-11 shrink-0 place-items-center rounded-xl', goal === g ? 'bg-brand-700 text-white' : TILE[g])}>{ICONS[g]}</span>
                   <span>
                     <span className="block font-bold text-stone-900">{GOALS[g].label}</span>
                     <span className="block text-sm text-stone-600">{GOALS[g].focus}</span>
@@ -114,9 +143,6 @@ export default function Onboarding() {
           </div>
         ) : (
           <div className="fade-in">
-            <button onClick={() => setStep(1)} className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-stone-600 hover:text-stone-900">
-              <ArrowLeft className="size-4" /> Kembali
-            </button>
             <h1 className="text-2xl font-extrabold text-brand-900 sm:text-3xl">Fokus: {cfg.label}</h1>
             <p className="mt-2 text-stone-600">Atur targetmu. Angka bawaan adalah acuan umum dan bisa kamu ubah kapan saja di Profil.</p>
             <div className="card mt-6 space-y-4 p-5">

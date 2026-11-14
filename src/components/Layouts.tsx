@@ -1,7 +1,7 @@
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
-  BarChart3, Camera, ClipboardList, House, LogOut, Menu as MenuIcon, PackageOpen, Receipt, Salad, Settings,
-  ShoppingBag, Sparkles, Store, UserRound, X,
+  Apple, ArrowLeft, ChartPie, ChefHat, HandPlatter, House, LogOut, Menu as MenuIcon, NotebookPen, Receipt, ScanLine,
+  Settings, ShoppingBag, UserRound, X,
 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useAuth } from '../contexts/AuthContext'
@@ -22,13 +22,30 @@ export function Logo({ size = 'md', to = '/' }: { size?: 'sm' | 'md'; to?: strin
   )
 }
 
+/** Tombol teks "Kembali ke beranda" (lebih jelas daripada mengandalkan klik logo). */
+export function BackLink({ to = '/', label = 'Kembali ke beranda', onClick }: { to?: string; label?: string; onClick?: () => void }) {
+  const cls = 'inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-semibold text-stone-700 hover:bg-white hover:text-brand-800'
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={cls}>
+        <ArrowLeft className="size-4" /> {label}
+      </button>
+    )
+  }
+  return (
+    <Link to={to} className={cls}>
+      <ArrowLeft className="size-4" /> {label}
+    </Link>
+  )
+}
+
 export function homeFor(role: Role | undefined) {
   return role === 'owner' ? '/dashboard' : '/home'
 }
 
 /** Halaman yang wajib login dengan role tertentu. */
 export function RequireRole({ role }: { role: Role }) {
-  const { session, profile, loading, signOut } = useAuth()
+  const { session, profile, loading, signedOut, signOut } = useAuth()
   const location = useLocation()
   if (loading) {
     return (
@@ -37,7 +54,7 @@ export function RequireRole({ role }: { role: Role }) {
       </div>
     )
   }
-  if (!session) return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  if (!session) return signedOut ? <Navigate to="/" replace /> : <Navigate to="/login" replace state={{ from: location.pathname }} />
   if (!profile) {
     return (
       <div className="mx-auto max-w-md p-6">
@@ -70,23 +87,24 @@ export function ConfigWarning() {
   )
 }
 
-type NavItem = { to: string; label: string; icon: ReactNode }
+/** tile: warna kotak ikon di sidebar (tiap menu punya warna sendiri agar mudah dikenali) */
+type NavItem = { to: string; label: string; icon: ReactNode; tile?: string }
 
 const OWNER_NAV: NavItem[] = [
-  { to: '/dashboard', label: 'Dashboard', icon: <BarChart3 className="size-5" /> },
-  { to: '/input', label: 'Catatan', icon: <ClipboardList className="size-5" /> },
-  { to: '/waste', label: 'AI Vision', icon: <Camera className="size-5" /> },
-  { to: '/forecast', label: 'Prediksi', icon: <Sparkles className="size-5" /> },
-  { to: '/surplus/manage', label: 'Surplus', icon: <PackageOpen className="size-5" /> },
-  { to: '/orders', label: 'Pesanan', icon: <Receipt className="size-5" /> },
-  { to: '/settings', label: 'Pengaturan', icon: <Settings className="size-5" /> },
+  { to: '/dashboard', label: 'Dashboard', icon: <ChartPie className="size-5" />, tile: 'bg-brand-100 text-brand-700' },
+  { to: '/input', label: 'Catatan', icon: <NotebookPen className="size-5" />, tile: 'bg-amber-100 text-amber-700' },
+  { to: '/waste', label: 'AI Vision', icon: <ScanLine className="size-5" />, tile: 'bg-sky-100 text-sky-700' },
+  { to: '/forecast', label: 'Prediksi', icon: <ChefHat className="size-5" />, tile: 'bg-accent-100 text-accent-600' },
+  { to: '/surplus/manage', label: 'Surplus', icon: <HandPlatter className="size-5" />, tile: 'bg-rose-100 text-rose-600' },
+  { to: '/orders', label: 'Pesanan', icon: <Receipt className="size-5" />, tile: 'bg-violet-100 text-violet-700' },
+  { to: '/settings', label: 'Pengaturan', icon: <Settings className="size-5" />, tile: 'bg-stone-200 text-stone-700' },
 ]
 const OWNER_MOBILE = OWNER_NAV.slice(0, 5)
 
 const CUSTOMER_NAV: NavItem[] = [
   { to: '/home', label: 'Beranda', icon: <House className="size-5" /> },
-  { to: '/surplus', label: 'Surplus', icon: <ShoppingBag className="size-5" /> },
-  { to: '/nutrition', label: 'Cek Gizi', icon: <Salad className="size-5" /> },
+  { to: '/surplus', label: 'Surplus', icon: <HandPlatter className="size-5" /> },
+  { to: '/nutrition', label: 'Cek Gizi', icon: <Apple className="size-5" /> },
   { to: '/my-orders', label: 'Pesanan', icon: <Receipt className="size-5" /> },
   { to: '/profile', label: 'Profil', icon: <UserRound className="size-5" /> },
 ]
@@ -99,13 +117,19 @@ function SideLink({ item, onClick }: { item: NavItem; onClick?: () => void }) {
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold transition-colors',
-          isActive ? 'bg-brand-700 text-white' : 'text-stone-700 hover:bg-brand-50 hover:text-brand-800',
+          'flex items-center gap-3 rounded-xl px-2 py-2 text-[15px] font-semibold transition-colors',
+          isActive ? 'bg-brand-700 text-white' : 'text-stone-700 hover:bg-stone-100',
         )
       }
     >
-      {item.icon}
-      {item.label}
+      {({ isActive }) => (
+        <>
+          <span className={cn('grid size-9 place-items-center rounded-lg', isActive ? 'bg-white/15 text-white' : (item.tile ?? 'bg-stone-100 text-stone-600'))}>
+            {item.icon}
+          </span>
+          {item.label}
+        </>
+      )}
     </NavLink>
   )
 }
@@ -174,7 +198,7 @@ export function OwnerLayout() {
               </button>
             </div>
             {OWNER_NAV.map((item) => <SideLink key={item.to} item={item} onClick={() => setOpen(false)} />)}
-            <SideLink item={{ to: '/surplus', label: 'Lihat halaman publik', icon: <Store className="size-5" /> }} onClick={() => setOpen(false)} />
+            <SideLink item={{ to: '/surplus', label: 'Lihat halaman publik', icon: <ShoppingBag className="size-5" /> }} onClick={() => setOpen(false)} />
             <div className="mt-auto"><UserBox /></div>
           </div>
         </div>

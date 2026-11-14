@@ -53,7 +53,6 @@ begin
   -- bersihkan data demo lama
   delete from public.orders           where outlet_id = v_outlet;
   delete from public.surplus_listings where outlet_id = v_outlet;
-  delete from public.waste_logs       where outlet_id = v_outlet;
   delete from public.ai_insights      where outlet_id = v_outlet;
   delete from public.daily_records    where outlet_id = v_outlet;
   delete from public.menus            where outlet_id = v_outlet;

@@ -1,9 +1,10 @@
 import { lazy, Suspense } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { CustomerLayout, OwnerLayout, RequireRole } from './components/Layouts'
 import { PageSkeleton } from './components/ui'
 import Landing from './pages/public/Landing'
-import { LoginPage, RegisterPage } from './pages/public/Auth'
+import { ForgotPasswordPage, LoginPage, RegisterPage, ResetPasswordPage } from './pages/public/Auth'
 import NotFound from './pages/public/NotFound'
 
 const SurplusPublic = lazy(() => import('./pages/public/SurplusPublic'))
@@ -22,7 +23,10 @@ const CustomerHome = lazy(() => import('./pages/customer/Home'))
 const Onboarding = lazy(() => import('./pages/customer/Onboarding'))
 
 export default function App() {
+  const location = useLocation()
   return (
+    // key: error di satu halaman tidak 'menempel' saat pindah halaman
+    <ErrorBoundary key={location.pathname}>
     <Suspense
       fallback={
         <div className="mx-auto max-w-5xl p-5">
@@ -34,6 +38,8 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Halaman publik + customer */}
         <Route element={<CustomerLayout />}>
@@ -68,5 +74,6 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
+    </ErrorBoundary>
   )
 }

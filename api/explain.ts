@@ -11,7 +11,8 @@ Aturan WAJIB:
 - Gunakan HANYA angka yang ada di data. JANGAN menambah, mengubah, atau menghitung angka baru.
 - Sebut hari target (misal Jumat) bila polanya berbeda dari biasa.
 - Soroti menu yang rekomendasinya jauh di bawah produksi terakhir (potensi hemat) dan menu dengan data belum cukup.
-- summary maksimal 120 kata, Bahasa Indonesia santai tapi sopan. actions: 2-3 kalimat pendek dan konkret.`
+- summary: 2-4 kalimat PENDEK (masing-masing satu poin, maks. 20 kata, diakhiri titik), Bahasa Indonesia santai tapi sopan.
+- actions: 2-3 kalimat pendek dan konkret.`
 
 const SYSTEM_DAILY = `Kamu adalah konsultan operasional kantin/UMKM kuliner Indonesia.
 Kamu menerima ringkasan produksi, penjualan, sisa, dan kerugian (Rupiah, dihitung dari sisa x HPP) untuk SATU HARI.
@@ -20,7 +21,8 @@ Aturan WAJIB:
 - Gunakan HANYA angka yang ada di data. JANGAN membuat angka baru.
 - Bandingkan persentase waste hari ini dengan rata-rata 30 hari jika tersedia.
 - Sebut menu dengan kerugian terbesar dan menu yang paling efisien.
-- summary maksimal 120 kata, Bahasa Indonesia santai tapi sopan. actions: 2-3 kalimat pendek dan konkret.`
+- summary: 2-4 kalimat PENDEK (masing-masing satu poin, maks. 20 kata, diakhiri titik), Bahasa Indonesia santai tapi sopan.
+- actions: 2-3 kalimat pendek dan konkret.`
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!allowMethods(req, res, ['POST'])) return

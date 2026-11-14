@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ShieldCheck } from 'lucide-react'
+import { PhotoField } from '../../components/PhotoField'
 import { useToast } from '../../components/Toast'
 import { Alert, Button, Card, Field, PageHeader } from '../../components/ui'
 import { useOutlet } from '../../contexts/AuthContext'
@@ -35,6 +36,7 @@ export default function SurplusNew() {
   const [price, setPrice] = useState('0')
   const [pickup, setPickup] = useState(defaultPickup())
   const [note, setNote] = useState(outlet.address ?? '')
+  const [photo, setPhoto] = useState<string | null>(null)
   const [checks, setChecks] = useState<boolean[]>(CHECKLIST.map(() => false))
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -63,6 +65,7 @@ export default function SurplusNew() {
     if (Number.isNaN(until.getTime()) || until.getTime() <= Date.now() + 10 * 60_000) return setError('Batas waktu ambil minimal 10 menit dari sekarang.')
     if (until.getTime() > Date.now() + 24 * 3600_000) return setError('Batas waktu ambil maksimal 24 jam ke depan demi keamanan pangan.')
     if (BLOCKED.test(`${title} ${note}`)) return setError('Teks mengandung kata yang tidak diperbolehkan.')
+    if (!photo) return setError('Foto makanan sisa hari ini wajib diisi agar customer bisa melihat kondisinya.')
     if (!allChecked) return setError('Centang semua checklist keamanan pangan sebelum menayangkan.')
 
     setBusy(true)
@@ -78,6 +81,7 @@ export default function SurplusNew() {
       location_note: note.trim() || null,
       safety_confirmed: true,
       is_active: true,
+      photo_url: photo,
     })
     setBusy(false)
     if (err) return setError(friendlyError(err))
@@ -91,6 +95,14 @@ export default function SurplusNew() {
       <Card className="p-4 sm:p-6">
         <form onSubmit={submit} className="space-y-4">
           {error && <Alert tone="danger">{error}</Alert>}
+          <PhotoField
+            label="Foto makanan sisa hari ini"
+            emptyText="Foto makanan yang mau dijual"
+            hint="Foto kondisi asli makanan saat ini, bukan foto menu. Customer melihat foto ini sebelum memesan."
+            value={photo}
+            onChange={setPhoto}
+            onError={setError}
+          />
           <Field label="Dari menu (opsional)" htmlFor="smenu">
             <select id="smenu" className="input" value={menuId} onChange={(e) => pickMenu(e.target.value)}>
               <option value="">Pilih menu...</option>

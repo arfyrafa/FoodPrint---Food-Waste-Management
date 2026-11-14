@@ -23,6 +23,8 @@ export function friendlyError(error: unknown): string {
   if (/User already registered/i.test(msg)) return 'Email ini sudah terdaftar. Silakan login.'
   if (/Email not confirmed/i.test(msg)) return 'Email belum dikonfirmasi. Cek kotak masuk email kamu.'
   if (/Password should be at least/i.test(msg)) return 'Password minimal 6 karakter.'
+  if (/should be different from the old/i.test(msg)) return 'Password baru harus berbeda dari password lama.'
+  if (/Auth session missing/i.test(msg)) return 'Link reset sudah tidak berlaku. Minta link baru.'
   if (/rate limit/i.test(msg)) return 'Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.'
   if (/daily_records_check|sold \+ leftover/i.test(msg)) return 'Terjual + sisa tidak boleh lebih dari jumlah diproduksi.'
   if (/violates check constraint/i.test(msg)) return 'Ada nilai yang tidak valid. Periksa kembali isian.'

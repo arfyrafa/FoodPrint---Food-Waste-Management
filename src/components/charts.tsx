@@ -1,10 +1,10 @@
 // Grafik dashboard (Recharts). Palet divalidasi aman untuk buta warna:
 // untung #2f6420 vs rugi #fb8a35 (CVD ΔE 21). Identitas tidak hanya warna: ada legenda + tabel.
 import {
-  Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
 import type { DayPoint, MenuStat, WeekdayPoint } from '../lib/analytics'
-import type { DayTotal, Metric } from '../lib/diet'
+import { onTarget, type DayTotal, type Metric } from '../lib/diet'
 import { DAY_SHORT, formatDate, num, rupiah, rupiahShort } from '../lib/format'
 
 export const CHART = {
@@ -31,10 +31,18 @@ function TooltipBox({ title, rows }: { title: string; rows: { label: string; val
   )
 }
 
-export function WasteLineChart({ data }: { data: DayPoint[] }) {
+export function WasteLineChart({ data, onDayClick }: { data: DayPoint[]; onDayClick?: (date: string) => void }) {
   return (
     <ResponsiveContainer width="100%" height={240}>
-      <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+      <LineChart
+        data={data}
+        margin={{ top: 8, right: 12, left: -12, bottom: 0 }}
+        onClick={(state) => {
+          const label = (state as { activeLabel?: string | number } | null)?.activeLabel
+          if (onDayClick && typeof label === 'string') onDayClick(label)
+        }}
+        style={onDayClick ? { cursor: 'pointer' } : undefined}
+      >
         <CartesianGrid stroke={CHART.grid} vertical={false} />
         <XAxis dataKey="date" tickFormatter={(d) => formatDate(d)} {...axisProps} minTickGap={24} />
         <YAxis {...axisProps} allowDecimals={false} width={44} />
@@ -50,12 +58,13 @@ export function WasteLineChart({ data }: { data: DayPoint[] }) {
                   { label: 'Porsi terbuang', value: `${num(d.leftover)} porsi`, color: CHART.waste },
                   { label: 'Waste', value: `${num(d.wastePct)}%` },
                   { label: 'Kerugian', value: rupiah(d.loss) },
+                  ...(onDayClick ? [{ label: 'Klik', value: 'buka catatan tanggal ini' }] : []),
                 ]}
               />
             )
           }}
         />
-        <Line type="monotone" dataKey="leftover" stroke={CHART.waste} strokeWidth={2} dot={false} activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }} />
+        <Line type="monotone" dataKey="leftover" stroke={CHART.waste} strokeWidth={2} dot={{ r: 3, fill: CHART.waste, strokeWidth: 0 }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} />
       </LineChart>
     </ResponsiveContainer>
   )
@@ -127,32 +136,81 @@ export function WeekdayChart({ data }: { data: WeekdayPoint[] }) {
 
 // ---------------- Grafik progres diet customer ----------------
 
-export function DietMetricChart({ days, metric, unit, label, target }: { days: DayTotal[]; metric: Metric; unit: string; label: string; target: number }) {
-  const rows = days.map((d) => ({ date: d.date, value: d.items > 0 ? d[metric] : null, items: d.items }))
-  const max = Math.max(target * 1.2, ...rows.map((r) => r.value ?? 0))
+/**
+ * Grafik progres harian metrik fokus customer.
+ * Batang hijau = sesuai target, oranye = belum sesuai (lewat batas / kurang), abu-abu = belum dicatat.
+ * Warna selalu disertai legenda teks + label di tooltip (tidak mengandalkan warna saja).
+ */
+export function DietMetricChart({
+  days, metric, unit, label, target, better,
+}: { days: DayTotal[]; metric: Metric; unit: string; label: string; target: number; better: 'lower' | 'higher' | 'near' }) {
+  const offLabel = better === 'lower' ? 'Lewat batas' : better === 'higher' ? 'Di bawah target' : 'Jauh dari target'
+  const rows = days.map((d) => {
+    const logged = d.items > 0
+    const value = d[metric]
+    const ok = logged && onTarget(value, target, better)
+    return { date: d.date, value: logged ? value : target * 0.03, logged, real: value, ok, items: d.items }
+  })
+  const max = Math.max(target * 1.25, ...rows.map((r) => (r.logged ? r.real : 0)))
+  const colorOf = (r: (typeof rows)[number]) => (!r.logged ? '#d6d3d1' : r.ok ? CHART.profit : CHART.loss)
+
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={rows} margin={{ top: 12, right: 8, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke={CHART.grid} vertical={false} />
-        <XAxis dataKey="date" tickFormatter={(d) => formatDate(d, { day: 'numeric' })} {...axisProps} interval={0} fontSize={11} />
-        <YAxis {...axisProps} width={48} domain={[0, Math.ceil(max)]} tickFormatter={(v) => num(v)} />
-        <ReferenceLine y={target} stroke="#57534e" strokeDasharray="5 4" label={{ value: `Target ${num(target)}`, position: 'insideTopRight', fill: '#57534e', fontSize: 11 }} />
-        <Tooltip
-          cursor={{ fill: 'rgba(0,0,0,0.04)' }}
-          content={({ active, payload }) => {
-            if (!active || !payload?.length) return null
-            const d = payload[0].payload as { date: string; value: number | null; items: number }
-            return (
-              <TooltipBox
-                title={formatDate(d.date, { weekday: 'long', day: 'numeric', month: 'short' })}
-                rows={d.value === null ? [{ label: label, value: 'belum dicatat' }] : [{ label, value: `${num(d.value)} ${unit}`, color: CHART.profit }, { label: 'Makanan dicatat', value: String(d.items) }]}
-              />
-            )
-          }}
-        />
-        <Bar dataKey="value" fill={CHART.profit} radius={[4, 4, 0, 0]} maxBarSize={22} />
-      </BarChart>
-    </ResponsiveContainer>
+    <div>
+      <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-stone-700">
+        <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-sm" style={{ background: CHART.profit }} /> Sesuai target</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-sm" style={{ background: CHART.loss }} /> {offLabel}</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-sm bg-stone-300" /> Belum dicatat</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-5 border-t-2 border-dashed border-stone-600" /> Target {num(target)} {unit}</span>
+      </div>
+      <ResponsiveContainer width="100%" height={230}>
+        <BarChart data={rows} margin={{ top: 8, right: 4, left: 0, bottom: 4 }}>
+          <CartesianGrid stroke={CHART.grid} vertical={false} />
+          <XAxis
+            dataKey="date"
+            {...axisProps}
+            interval={0}
+            height={36}
+            tick={(props) => {
+              const { x, y, payload } = props as unknown as { x: number; y: number; payload: { value: string } }
+              const d = new Date(`${payload.value}T00:00:00Z`)
+              const isMonday = d.getUTCDay() === 1
+              return (
+                <g transform={`translate(${x},${y})`}>
+                  <text y={12} textAnchor="middle" fill="#44403c" fontSize={11} fontWeight={600}>{d.getUTCDate()}</text>
+                  {isMonday && <text y={26} textAnchor="middle" fill="#78716c" fontSize={10}>Sen</text>}
+                </g>
+              )
+            }}
+          />
+          <YAxis {...axisProps} width={44} domain={[0, Math.ceil(max)]} tickFormatter={(v) => num(v)} />
+          <ReferenceLine y={target} stroke="#57534e" strokeDasharray="5 4" strokeWidth={1.5} />
+          <Tooltip
+            cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null
+              const d = payload[0].payload as (typeof rows)[number]
+              return (
+                <TooltipBox
+                  title={formatDate(d.date, { weekday: 'long', day: 'numeric', month: 'short' })}
+                  rows={
+                    d.logged
+                      ? [
+                          { label, value: `${num(d.real)} ${unit}`, color: colorOf(d) },
+                          { label: 'Status', value: d.ok ? 'Sesuai target' : offLabel },
+                          { label: 'Makanan dicatat', value: String(d.items) },
+                        ]
+                      : [{ label, value: 'Belum ada makanan dicatat' }]
+                  }
+                />
+              )
+            }}
+          />
+          <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={24}>
+            {rows.map((r) => <Cell key={r.date} fill={colorOf(r)} />)}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
 

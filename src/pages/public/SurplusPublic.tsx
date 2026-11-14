@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Clock, HeartHandshake, MapPin, MessageCircle, Minus, Plus, Salad, Search, Store } from 'lucide-react'
+import { Clock, HandPlatter, HeartHandshake, MapPin, MessageCircle, Minus, Plus, Salad, Search, Store } from 'lucide-react'
 import { useToast } from '../../components/Toast'
-import { Alert, Badge, Button, Card, EmptyState, Field, Modal, PageHeader, Skeleton } from '../../components/ui'
+import { Alert, Badge, Button, Card, EmptyState, Field, Modal, PageHeader, Skeleton, cn } from '../../components/ui'
+import { menuColor } from '../../components/MenuAvatar'
 import { useAuth } from '../../contexts/AuthContext'
+import { BackLink } from '../../components/Layouts'
 import { useAsync } from '../../lib/data'
 import { formatTime, rupiah, timeLeft, waLink } from '../../lib/format'
 import { friendlyError, supabase } from '../../lib/supabase'
@@ -49,7 +51,7 @@ export default function SurplusPublic() {
     setBusy(false)
     if (err) return setOrderError(friendlyError(err))
     const o = order as Order
-    toast(`Pesanan ${o.code} dibuat. Tunjukkan kode saat mengambil.`)
+    toast(`Pesanan ${o.code} dibuat. Tunjukkan barcode saat mengambil.`)
     setOrdering(null)
     reload()
     navigate('/my-orders')
@@ -57,6 +59,11 @@ export default function SurplusPublic() {
 
   return (
     <div className="space-y-5">
+      {!profile && (
+        <div className="-mb-2 -ml-2.5">
+          <BackLink />
+        </div>
+      )}
       <PageHeader
         title="Surplus Food"
         subtitle="Makanan berlebih yang masih layak dari kantin & UMKM sekitar, dengan harga lebih terjangkau."
@@ -88,7 +95,15 @@ export default function SurplusPublic() {
           const discount = l.original_price && l.original_price > l.price ? Math.round((1 - l.price / l.original_price) * 100) : null
           const wa = waLink(l.whatsapp, `Halo ${l.business_name}, saya tertarik dengan "${l.title}" di FoodPrint. Masih tersedia?`)
           return (
-            <Card key={l.id} className="flex flex-col p-4">
+            <Card key={l.id} className="flex flex-col overflow-hidden">
+              {l.photo_url ? (
+                <img src={l.photo_url} alt={l.title} className="aspect-[16/9] w-full object-cover" />
+              ) : (
+                <div className={cn('grid aspect-[16/9] w-full place-items-center', menuColor(l.title))}>
+                  <HandPlatter className="size-10 opacity-60" />
+                </div>
+              )}
+              <div className="flex flex-1 flex-col p-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-lg font-bold text-stone-900">{l.title}</p>
@@ -119,6 +134,7 @@ export default function SurplusPublic() {
                     <MessageCircle className="size-4" /> Hubungi
                   </a>
                 )}
+              </div>
               </div>
             </Card>
           )

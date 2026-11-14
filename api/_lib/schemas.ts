@@ -1,25 +1,35 @@
 import { z } from 'zod'
 
-// ---------- Vision: foto sisa makanan ----------
-export const FOOD_CATEGORIES = ['karbohidrat', 'protein', 'sayur', 'lauk_lain', 'minuman', 'lainnya'] as const
-
+// ---------- Vision: analisis gizi & kelayakan satu makanan dari foto ----------
 export const visionRequest = z.object({
   image: z.string().max(6_000_000),
-  menus: z.array(z.string().max(80)).max(50).optional(),
+  hint: z.string().max(120).optional(), // nama makanan (opsional) untuk membantu AI
 })
+
+const level = z.enum(['rendah', 'sedang', 'tinggi']).catch('sedang')
 
 export const visionResult = z.object({
   is_food: z.boolean(),
-  items: z
-    .array(
-      z.object({
-        name: z.string().max(80),
-        category: z.enum(FOOD_CATEGORIES).catch('lainnya'),
-        estimated_portions: z.number().min(0).max(500),
-        confidence: z.number().min(0).max(1),
-      }),
-    )
-    .max(20),
+  food_name: z.string().max(120),
+  portion: z.string().max(80),
+  calories: z.number().min(0).max(5000),
+  // persentase energi dari tiap zat gizi makro (dinormalisasi agar total 100)
+  composition: z.object({
+    protein_pct: z.number().min(0).max(100),
+    carbs_pct: z.number().min(0).max(100),
+    fat_pct: z.number().min(0).max(100),
+    fiber_pct: z.number().min(0).max(100),
+  }),
+  micronutrients: z
+    .array(z.object({ name: z.string().max(40), akg_pct: z.number().min(0).max(500) }))
+    .max(6),
+  safety: z.object({
+    status: z.enum(['layak', 'periksa', 'tidak_layak']).catch('periksa'),
+    confidence: z.number().min(0).max(1),
+    signs: z.array(z.string().max(160)).max(5),
+    advice: z.string().max(300),
+  }),
+  sugar_level: level,
   notes: z.string().max(300).catch(''),
 })
 
@@ -27,22 +37,37 @@ export const visionGeminiSchema = {
   type: 'OBJECT',
   properties: {
     is_food: { type: 'BOOLEAN' },
-    items: {
-      type: 'ARRAY',
-      items: {
-        type: 'OBJECT',
-        properties: {
-          name: { type: 'STRING' },
-          category: { type: 'STRING', enum: [...FOOD_CATEGORIES] },
-          estimated_portions: { type: 'NUMBER' },
-          confidence: { type: 'NUMBER' },
-        },
-        required: ['name', 'category', 'estimated_portions', 'confidence'],
+    food_name: { type: 'STRING' },
+    portion: { type: 'STRING' },
+    calories: { type: 'NUMBER' },
+    composition: {
+      type: 'OBJECT',
+      properties: {
+        protein_pct: { type: 'NUMBER' },
+        carbs_pct: { type: 'NUMBER' },
+        fat_pct: { type: 'NUMBER' },
+        fiber_pct: { type: 'NUMBER' },
       },
+      required: ['protein_pct', 'carbs_pct', 'fat_pct', 'fiber_pct'],
     },
+    micronutrients: {
+      type: 'ARRAY',
+      items: { type: 'OBJECT', properties: { name: { type: 'STRING' }, akg_pct: { type: 'NUMBER' } }, required: ['name', 'akg_pct'] },
+    },
+    safety: {
+      type: 'OBJECT',
+      properties: {
+        status: { type: 'STRING', enum: ['layak', 'periksa', 'tidak_layak'] },
+        confidence: { type: 'NUMBER' },
+        signs: { type: 'ARRAY', items: { type: 'STRING' } },
+        advice: { type: 'STRING' },
+      },
+      required: ['status', 'confidence', 'signs', 'advice'],
+    },
+    sugar_level: { type: 'STRING', enum: ['rendah', 'sedang', 'tinggi'] },
     notes: { type: 'STRING' },
   },
-  required: ['is_food', 'items', 'notes'],
+  required: ['is_food', 'food_name', 'portion', 'calories', 'composition', 'micronutrients', 'safety', 'sugar_level', 'notes'],
 }
 
 // ---------- Explain: penjelasan prediksi & kesimpulan harian ----------
@@ -114,8 +139,6 @@ export const nutritionRequest = z
     notes: z.string().max(200).optional().default(''),
   })
   .refine((v) => v.food.trim().length > 0 || Boolean(v.image), { message: 'Isi nama makanan atau unggah foto' })
-
-const level = z.enum(['rendah', 'sedang', 'tinggi']).catch('sedang')
 
 export const nutritionResult = z.object({
   is_food: z.boolean(),

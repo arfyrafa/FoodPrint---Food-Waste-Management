@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Receipt } from 'lucide-react'
+import { OrderBarcode } from '../../components/OrderBarcode'
 import { OrderStatusBadge } from '../../components/OrderBits'
 import { useToast } from '../../components/Toast'
 import { Alert, Button, Card, EmptyState, PageHeader, PageSkeleton } from '../../components/ui'
@@ -35,7 +36,7 @@ export default function MyOrders() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Pesananku" subtitle="Tunjukkan kode pesanan saat mengambil makanan." />
+      <PageHeader title="Pesananku" subtitle="Tunjukkan barcode pesanan ke penjual saat mengambil makanan." />
       {data?.length === 0 && (
         <EmptyState icon={<Receipt className="size-6" />} title="Belum ada pesanan" action={<Link to="/surplus" className="font-semibold text-brand-700 underline">Lihat makanan surplus</Link>}>
           Pesan makanan surplus dengan harga terjangkau dari kantin sekitar.
@@ -52,10 +53,10 @@ export default function MyOrders() {
               <OrderStatusBadge status={o.status} />
             </div>
             {['pending', 'confirmed'].includes(o.status) && (
-              <div className="mt-3 rounded-xl border-2 border-dashed border-brand-300 bg-brand-50 py-3 text-center">
-                <p className="text-xs font-semibold text-brand-700">Kode pengambilan</p>
-                <p className="font-mono text-2xl font-extrabold tracking-widest text-brand-900">{o.code}</p>
-                <p className="text-xs text-stone-600">Ambil sebelum {formatDateTime(o.pickup_until)}</p>
+              <div className="mt-3 rounded-2xl border-2 border-dashed border-brand-300 bg-brand-50 p-3 text-center">
+                <p className="mb-2 text-xs font-semibold text-brand-700">Tunjukkan barcode ini ke penjual saat mengambil</p>
+                <OrderBarcode value={o.code} />
+                <p className="mt-2 text-xs text-stone-600">Ambil sebelum {formatDateTime(o.pickup_until)}</p>
               </div>
             )}
             <div className="mt-3 flex items-center justify-between gap-2">
