@@ -44,7 +44,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       temperature: 0.2,
     })
     const result = visionResult.safeParse(raw)
-    if (!result.success) return fail(res, 'ai_error', 'Hasil AI tidak bisa dibaca. Coba lagi.')
+    if (!result.success) {
+      console.error('[AI Vision] Validation error:', result.error, 'Raw Gemini output was:', raw)
+      return fail(res, 'ai_error', 'Hasil AI tidak bisa dibaca. Coba lagi.')
+    }
     if (!result.data.is_food) return fail(res, 'not_food', 'Foto tidak terdeteksi sebagai makanan. Coba foto lain yang lebih jelas.')
 
     res.status(200).json({ ok: true, source: 'ai', result: result.data })

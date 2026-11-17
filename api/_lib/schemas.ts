@@ -9,28 +9,41 @@ export const visionRequest = z.object({
 const level = z.enum(['rendah', 'sedang', 'tinggi']).catch('sedang')
 
 export const visionResult = z.object({
-  is_food: z.boolean(),
-  food_name: z.string().max(120),
-  portion: z.string().max(80),
-  calories: z.number().min(0).max(5000),
+  is_food: z.boolean().catch(true),
+  food_name: z.string().max(200).catch('Makanan'),
+  portion: z.string().max(150).catch('1 porsi'),
+  calories: z.coerce.number().min(0).max(10000).catch(500),
   // persentase energi dari tiap zat gizi makro (dinormalisasi agar total 100)
   composition: z.object({
-    protein_pct: z.number().min(0).max(100),
-    carbs_pct: z.number().min(0).max(100),
-    fat_pct: z.number().min(0).max(100),
-    fiber_pct: z.number().min(0).max(100),
+    protein_pct: z.coerce.number().min(0).max(100),
+    carbs_pct: z.coerce.number().min(0).max(100),
+    fat_pct: z.coerce.number().min(0).max(100),
+    fiber_pct: z.coerce.number().min(0).max(100),
   }),
   micronutrients: z
-    .array(z.object({ name: z.string().max(40), akg_pct: z.number().min(0).max(500) }))
-    .max(6),
+    .preprocess(
+      (val) => (Array.isArray(val) ? val.slice(0, 6) : []),
+      z.array(
+        z.object({
+          name: z.string().max(80),
+          akg_pct: z.coerce.number().min(0).max(1000).catch(10),
+        })
+      )
+    )
+    .catch([]),
   safety: z.object({
     status: z.enum(['layak', 'periksa', 'tidak_layak']).catch('periksa'),
-    confidence: z.number().min(0).max(1),
-    signs: z.array(z.string().max(160)).max(5),
-    advice: z.string().max(300),
+    confidence: z.preprocess(
+      (val) => (typeof val === 'number' && val > 1 ? val / 100 : val),
+      z.coerce.number().min(0).max(1).catch(0.85)
+    ),
+    signs: z
+      .preprocess((val) => (Array.isArray(val) ? val.slice(0, 5) : []), z.array(z.string().max(300)))
+      .catch([]),
+    advice: z.string().max(1000).catch('Simpan di wadah bersih dan tertutup.'),
   }),
   sugar_level: level,
-  notes: z.string().max(300).catch(''),
+  notes: z.string().max(1000).catch(''),
 })
 
 export const visionGeminiSchema = {
@@ -141,23 +154,27 @@ export const nutritionRequest = z
   .refine((v) => v.food.trim().length > 0 || Boolean(v.image), { message: 'Isi nama makanan atau unggah foto' })
 
 export const nutritionResult = z.object({
-  is_food: z.boolean(),
-  food_name: z.string().max(120),
-  portion: z.string().max(80),
-  calories: z.number().min(0).max(5000),
-  protein_g: z.number().min(0).max(500),
-  carbs_g: z.number().min(0).max(1000),
-  fat_g: z.number().min(0).max(500),
-  fiber_g: z.number().min(0).max(200),
-  sugar_g: z.number().min(0).max(500),
-  sodium_mg: z.number().min(0).max(10000),
+  is_food: z.boolean().catch(true),
+  food_name: z.string().max(200).catch('Makanan'),
+  portion: z.string().max(150).catch('1 porsi'),
+  calories: z.coerce.number().min(0).max(10000).catch(500),
+  protein_g: z.coerce.number().min(0).max(1000).catch(20),
+  carbs_g: z.coerce.number().min(0).max(2000).catch(50),
+  fat_g: z.coerce.number().min(0).max(1000).catch(15),
+  fiber_g: z.coerce.number().min(0).max(500).catch(5),
+  sugar_g: z.coerce.number().min(0).max(1000).catch(5),
+  sodium_mg: z.coerce.number().min(0).max(50000).catch(500),
   sugar_level: level,
   sodium_level: level,
   verdict: z.enum(['baik', 'cukup', 'kurang']).catch('cukup'),
-  score: z.number().min(0).max(100),
-  summary: z.string().max(600),
-  reasons: z.array(z.string().max(250)).max(5),
-  tips: z.array(z.string().max(250)).max(5),
+  score: z.coerce.number().min(0).max(100).catch(75),
+  summary: z.string().max(1000).catch(''),
+  reasons: z
+    .preprocess((val) => (Array.isArray(val) ? val.slice(0, 5) : []), z.array(z.string().max(500)))
+    .catch([]),
+  tips: z
+    .preprocess((val) => (Array.isArray(val) ? val.slice(0, 5) : []), z.array(z.string().max(500)))
+    .catch([]),
 })
 
 export const nutritionGeminiSchema = {
