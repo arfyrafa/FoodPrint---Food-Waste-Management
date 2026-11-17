@@ -11,7 +11,8 @@ export function fail(res: VercelResponse, reason: FailReason, message: string, s
 export function handleAiError(res: VercelResponse, err: unknown) {
   console.error('[AI]', err)
   if (err instanceof GeminiError && err.message.includes('belum diatur')) {
-    return fail(res, 'not_configured', 'Layanan AI belum dikonfigurasi. Menampilkan hasil cadangan.')
+    return fail(res, 'not_configured', 'Layanan AI belum dikonfigurasi. Periksa GEMINI_API_KEY.')
   }
-  return fail(res, 'ai_error', 'AI sedang tidak tersedia. Menampilkan hasil cadangan.')
+  const detail = err instanceof Error ? err.message : String(err)
+  return fail(res, 'ai_error', `AI sedang tidak tersedia (${detail}). Silakan coba sesaat lagi.`)
 }

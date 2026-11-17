@@ -315,41 +315,86 @@ function MenuManager() {
         <EmptyState icon={<UtensilsCrossed className="size-6" />} title="Belum ada menu">Tambahkan menu pertama kamu.</EmptyState>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {menus?.map((m) => {
+          const profit = m.price - m.hpp
+          const profitPct = m.price > 0 ? Math.round((profit / m.price) * 100) : 0
           return (
-            <Card key={m.id} className={cn('overflow-hidden', !m.is_active && 'opacity-60 grayscale')}>
-              <div className="relative">
+            <Card key={m.id} className={cn('group overflow-hidden transition-all duration-200 hover:shadow-md', !m.is_active && 'opacity-60 grayscale')}>
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
                 {m.photo_url ? (
-                  <img src={m.photo_url} alt={m.name} className="aspect-[16/9] w-full object-cover" />
+                  <>
+                    <img src={m.photo_url} alt={m.name} className="size-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    {/* Gradient overlay di atas agar tombol aksi selalu kontras */}
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/40 via-black/10 to-transparent" />
+                  </>
                 ) : (
                   <button
                     type="button"
                     onClick={() => openEdit(m)}
-                    className={cn('flex aspect-[16/9] w-full flex-col items-center justify-center gap-2', menuColor(m.name))}
+                    className={cn('flex size-full flex-col items-center justify-center gap-2.5 transition-colors hover:brightness-95', menuColor(m.name))}
                   >
-                    <span className="text-3xl font-extrabold opacity-60">{m.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()}</span>
-                    <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-1.5 text-sm font-semibold text-stone-800 shadow-sm">
-                      <ImagePlus className="size-4" /> Tambah foto
+                    <div className="grid size-14 place-items-center rounded-2xl bg-white/80 shadow-xs backdrop-blur-xs">
+                      <UtensilsCrossed className="size-7 opacity-75" />
+                    </div>
+                    <div className="text-center">
+                      <span className="text-sm font-extrabold tracking-wider uppercase opacity-80">{m.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('')}</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/95 px-3 py-1.5 text-xs font-bold text-stone-800 shadow-xs hover:bg-white">
+                      <ImagePlus className="size-3.5 text-brand-600" /> Tambah foto
                     </span>
                   </button>
                 )}
-                <div className="absolute top-2 right-2 flex gap-1.5">
-                  <button onClick={() => openEdit(m)} className="grid size-9 place-items-center rounded-full bg-white/90 text-stone-700 shadow hover:bg-white" aria-label={`Ubah ${m.name}`}>
+
+                {/* Tombol Aksi di Pojok Kanan Atas */}
+                <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => openEdit(m)}
+                    className="grid size-9 place-items-center rounded-xl bg-white/90 text-stone-700 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-brand-800 hover:shadow active:scale-95"
+                    aria-label={`Ubah ${m.name}`}
+                    title="Ubah data atau ganti foto menu"
+                  >
                     <Pencil className="size-4" />
                   </button>
-                  <button onClick={() => toggle(m)} className="grid size-9 place-items-center rounded-full bg-white/90 text-stone-700 shadow hover:bg-white" aria-label={m.is_active ? `Nonaktifkan ${m.name}` : `Aktifkan ${m.name}`} title={m.is_active ? 'Nonaktifkan (riwayat tetap ada)' : 'Aktifkan kembali'}>
+                  <button
+                    type="button"
+                    onClick={() => toggle(m)}
+                    className="grid size-9 place-items-center rounded-xl bg-white/90 text-stone-700 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-stone-900 hover:shadow active:scale-95"
+                    aria-label={m.is_active ? `Nonaktifkan ${m.name}` : `Aktifkan ${m.name}`}
+                    title={m.is_active ? 'Nonaktifkan (riwayat tetap ada)' : 'Aktifkan kembali'}
+                  >
                     {m.is_active ? <Archive className="size-4" /> : <ArchiveRestore className="size-4" />}
                   </button>
                 </div>
-                {!m.is_active && <span className="absolute top-2 left-2"><Badge>Nonaktif</Badge></span>}
+
+                {!m.is_active && (
+                  <span className="absolute top-2.5 left-2.5">
+                    <Badge tone="default">Nonaktif</Badge>
+                  </span>
+                )}
               </div>
+
               <div className="p-4">
-              <p className="truncate text-lg font-bold text-stone-900">{m.name}</p>
-              <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
-                <div className="rounded-xl bg-brand-50 px-3 py-2"><dt className="text-xs text-brand-800">Harga jual / porsi</dt><dd className="text-base font-bold text-stone-900">{rupiah(m.price)}</dd></div>
-                <div className="rounded-xl bg-amber-50 px-3 py-2"><dt className="text-xs text-amber-800">Modal / porsi</dt><dd className="text-base font-bold text-stone-900">{rupiah(m.hpp)}</dd></div>
-              </dl>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="truncate text-base font-bold text-stone-900" title={m.name}>{m.name}</p>
+                  {profit > 0 && (
+                    <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200/50">
+                      +{profitPct}%
+                    </span>
+                  )}
+                </div>
+
+                <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                  <div className="rounded-xl border border-stone-200/70 bg-stone-50/60 px-3 py-2">
+                    <dt className="text-[11px] font-medium text-stone-500">Harga Jual</dt>
+                    <dd className="mt-0.5 text-base font-bold text-stone-900">{rupiah(m.price)}</dd>
+                  </div>
+                  <div className="rounded-xl border border-stone-200/70 bg-stone-50/60 px-3 py-2">
+                    <dt className="text-[11px] font-medium text-stone-500">Modal (HPP)</dt>
+                    <dd className="mt-0.5 text-base font-bold text-amber-800">{rupiah(m.hpp)}</dd>
+                  </div>
+                </dl>
               </div>
             </Card>
           )

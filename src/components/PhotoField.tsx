@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Camera, ImagePlus } from 'lucide-react'
+import { Camera, ImagePlus, Trash2 } from 'lucide-react'
 import { prepareImage } from '../lib/image'
 
 /** Kolom foto wajib (kamera atau galeri), otomatis dikecilkan ke 640 px agar ringan. */
@@ -39,11 +39,16 @@ export function PhotoField({
       <p className="label">{label} <span className="font-normal text-red-600">(wajib)</span></p>
       <input ref={ref} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
       {value ? (
-        <div className="relative overflow-hidden rounded-2xl">
+        <div className="relative overflow-hidden rounded-2xl border border-stone-200">
           <img src={value} alt={label} className="aspect-[4/3] w-full object-cover" />
-          <button type="button" onClick={() => ref.current?.click()} className="absolute right-2 bottom-2 inline-flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-1.5 text-sm font-semibold text-stone-800 shadow">
-            <ImagePlus className="size-4" /> Ganti foto
-          </button>
+          <div className="absolute right-2 bottom-2 flex items-center gap-1.5">
+            <button type="button" onClick={() => ref.current?.click()} className="inline-flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-stone-800 shadow-sm backdrop-blur-xs transition hover:bg-white">
+              <ImagePlus className="size-3.5" /> Ganti foto
+            </button>
+            <button type="button" onClick={() => onChange(null)} className="inline-flex items-center gap-1 rounded-xl bg-white/90 p-1.5 text-xs font-semibold text-red-600 shadow-sm backdrop-blur-xs transition hover:bg-white hover:text-red-700" title="Hapus foto">
+              <Trash2 className="size-3.5" />
+            </button>
+          </div>
         </div>
       ) : (
         <button

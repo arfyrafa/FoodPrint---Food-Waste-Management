@@ -13,9 +13,9 @@ Satu sumber kebenaran untuk README, proposal bagian 2.5, dan Surat Pernyataan. P
 ## B. AI coding assistant saat development
 | Tanggal | Alat | Dipakai untuk | Ditinjau oleh |
 |---|---|---|---|
-| 13 Nov 2026 | Claude (Anthropic) | Scaffold awal project: skema database & RLS, seed data simulasi, endpoint API AI, halaman frontend, unit test | *(isi nama anggota)* |
-| | | | |
+| 13 Nov 2026 | Claude (Anthropic) | Scaffold awal project: skema database & RLS, seed data simulasi, endpoint API AI, halaman frontend, unit test | Muhammad Arfy Rafa |
+| 17 Nov 2026 | Antigravity (Gemini) | Integrasi Supabase, optimasi model Gemini & multi-model failover, perbaikan UI kartu menu & image preview, sinkronisasi dokumentasi | Muhammad Arfy Rafa |
 
 ## C. Template & aset
-- Logo FoodPrint: dibuat tim *(isi alat/sumber pembuatan logo)*.
+- Logo FoodPrint: dibuat orisinal oleh tim Techtonic ampe Wisuda (Canva / Figma).
 - Tidak memakai template UI berbayar.

@@ -97,9 +97,11 @@ export default function SurplusPublic() {
           return (
             <Card key={l.id} className="flex flex-col overflow-hidden">
               {l.photo_url ? (
-                <img src={l.photo_url} alt={l.title} className="aspect-[16/9] w-full object-cover" />
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
+                  <img src={l.photo_url} alt={l.title} className="size-full object-cover transition-transform duration-300 hover:scale-105" />
+                </div>
               ) : (
-                <div className={cn('grid aspect-[16/9] w-full place-items-center', menuColor(l.title))}>
+                <div className={cn('grid aspect-[4/3] w-full place-items-center', menuColor(l.title))}>
                   <HandPlatter className="size-10 opacity-60" />
                 </div>
               )}

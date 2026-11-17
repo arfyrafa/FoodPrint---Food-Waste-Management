@@ -10,29 +10,6 @@ import { num } from '../../lib/format'
 import { prepareImage } from '../../lib/image'
 import type { FoodScanResult } from '../../lib/types'
 
-/** Contoh hasil untuk mode demo / saat AI tidak tersedia. */
-const SAMPLE: FoodScanResult = {
-  is_food: true,
-  food_name: 'Nasi ayam goreng (contoh)',
-  portion: '1 piring',
-  calories: 650,
-  composition: { protein_pct: 22, carbs_pct: 48, fat_pct: 26, fiber_pct: 4 },
-  micronutrients: [
-    { name: 'Vitamin B3 (niasin)', akg_pct: 45 },
-    { name: 'Vitamin B6', akg_pct: 25 },
-    { name: 'Selenium', akg_pct: 35 },
-    { name: 'Zat besi', akg_pct: 12 },
-  ],
-  safety: {
-    status: 'layak',
-    confidence: 0.8,
-    signs: ['Warna nasi dan ayam tampak normal', 'Tidak terlihat jamur, lendir, atau perubahan warna'],
-    advice: 'Simpan tertutup dan habiskan dalam 4 jam pada suhu ruang. Cium baunya sebelum dijual.',
-  },
-  sugar_level: 'rendah',
-  notes: 'Ini hasil contoh, bukan analisis dari foto kamu.',
-}
-
 // Palet divalidasi aman untuk buta warna; selalu disertai label persen
 const MACROS = [
   { key: 'protein_pct', label: 'Protein', color: '#2f6420' },
@@ -60,7 +37,6 @@ export default function WastePage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [result, setResult] = useState<FoodScanResult | null>(null)
-  const [source, setSource] = useState<'ai' | 'sample' | null>(null)
 
   async function analyze(image: string) {
     setBusy(true)
@@ -70,7 +46,6 @@ export default function WastePage() {
     setBusy(false)
     if (res.ok) {
       setResult(res.result)
-      setSource('ai')
     } else {
       setError(res.message)
     }
@@ -107,13 +82,8 @@ export default function WastePage() {
             </Button>
           )}
           {error && (
-            <Alert tone="warn">
+            <Alert tone="danger">
               {error}
-              <div className="mt-2">
-                <Button size="sm" variant="outline" onClick={() => { setResult(SAMPLE); setSource('sample'); setError('') }}>
-                  Lihat contoh hasil
-                </Button>
-              </div>
             </Alert>
           )}
           <p className="flex items-start gap-2 rounded-xl bg-stone-50 p-3 text-xs text-stone-500">
@@ -148,7 +118,7 @@ export default function WastePage() {
                   <h2 className="text-xl font-extrabold text-stone-900">{result.food_name}</h2>
                   <p className="text-sm text-stone-500">{result.portion} · sekitar <b className="text-stone-800">{num(result.calories)} kkal</b></p>
                 </div>
-                <Badge tone={source === 'ai' ? 'good' : 'warn'}>{source === 'ai' ? 'Analisis Gemini' : 'Contoh hasil'}</Badge>
+                <Badge tone="good">Analisis AI Gemini</Badge>
               </div>
               {result.notes && <p className="rounded-lg bg-stone-50 px-3 py-2 text-sm text-stone-600">{result.notes}</p>}
 
