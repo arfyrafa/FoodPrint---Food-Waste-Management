@@ -9,7 +9,7 @@ Web app berbasis AI untuk pengelola kantin kampus dan UMKM kuliner agar memasak 
 | **Kompetisi** | IT RUSH 2026 (Web Development) |
 | **Subtema** | Lingkungan dan Konservasi |
 | **Tim** | Techtonic ampe Wisuda |
-| **Live Website** | `[ISI: https://....vercel.app]` |
+| **Live Website** | https://food-print-food-waste-management.vercel.app |
 | **Video Demo** | `[ISI: link YouTube Unlisted]` |
 | **Versi PRD** | v1.1 (10 November 2026) |
 
