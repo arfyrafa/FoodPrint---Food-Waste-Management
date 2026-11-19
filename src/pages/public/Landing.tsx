@@ -3,9 +3,12 @@ import {
   ArrowRight,
   CheckCircle2,
   ChefHat,
+  Clock,
   HandPlatter,
+  Leaf,
   Salad,
   ShieldCheck,
+  TrendingDown,
   UtensilsCrossed,
 } from 'lucide-react'
 import { Logo, ConfigWarning, homeFor } from '../../components/Layouts'
@@ -72,15 +75,15 @@ export default function Landing() {
       </header>
 
       <main>
-        {/* HERO SECTION */}
-        <section className="border-b border-stone-200/70 bg-gradient-to-b from-brand-50/70 via-cream to-cream pt-10 pb-16 sm:pt-14 sm:pb-20">
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+        {/* HERO SECTION DENGAN ELEVASI VISUAL */}
+        <section className="relative overflow-hidden border-b border-stone-200/80 bg-gradient-to-b from-brand-50/80 via-brand-50/20 to-cream pt-10 pb-16 sm:pt-14 sm:pb-20">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
             
             {/* Sisi Kiri: Pesan Utama & CTA */}
             <div>
-              <div className="inline-flex items-center gap-2 rounded-lg border border-brand-200 bg-brand-100/70 px-3 py-1 text-xs font-bold text-brand-800">
+              <div className="inline-flex items-center gap-2 rounded-lg border border-brand-200 bg-brand-100/80 px-3 py-1 text-xs font-bold text-brand-900 shadow-2xs">
                 <UtensilsCrossed className="size-3.5 text-brand-700" />
-                Manajemen Limbah Makanan Kantin Kampus
+                Manajemen Limbah Makanan Kantin Kampus & Food Rescue
               </div>
 
               <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-brand-900 sm:text-5xl sm:leading-[1.15]">
@@ -125,36 +128,127 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Sisi Kanan: Visual Branding FoodPrint */}
-            <div className="flex flex-col items-center justify-center">
-              <div className="w-full max-w-md rounded-3xl border border-stone-200/90 bg-white p-6 shadow-sm sm:p-7">
-                <img
-                  src="/logo-full.png"
-                  alt="FoodPrint Logo"
-                  className="mx-auto w-full max-w-[260px]"
-                />
-                <div className="mt-6 space-y-2.5 border-t border-stone-100 pt-5">
-                  <div className="flex items-center gap-3 rounded-xl bg-brand-50/80 p-3 text-xs text-brand-900">
-                    <ChefHat className="size-4 shrink-0 text-brand-700" />
-                    <span><b>Prediksi Produksi:</b> Masak terukur dari riwayat penjualan harian</span>
+            {/* Sisi Kanan: UI Artifact Showcase Terpadu (Dua Sisi Solusi Nyata) */}
+            <div className="relative">
+              {/* Bingkai Luar Bertekstur */}
+              <div className="rounded-3xl border border-stone-200/90 bg-gradient-to-b from-white via-white to-stone-50/80 p-5 shadow-sm sm:p-6 space-y-4">
+                
+                {/* Header Status Sistem */}
+                <div className="flex items-center justify-between border-b border-stone-100 pb-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-semibold text-stone-700">Kantin Kampus Utama</span>
                   </div>
-                  <div className="flex items-center gap-3 rounded-xl bg-sky-50/80 p-3 text-xs text-sky-900">
-                    <ShieldCheck className="size-4 shrink-0 text-sky-700" />
-                    <span><b>AI Vision:</b> Cek visual kelayakan makanan & profil nutrisi</span>
+                  <span className="rounded-full bg-brand-50 px-2.5 py-0.5 font-medium text-brand-800 border border-brand-200/60">
+                    Sistem Aktif Hari Ini
+                  </span>
+                </div>
+
+                {/* Kartu Preview 1: Prediksi Produksi Kantin */}
+                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex size-9 items-center justify-center rounded-xl bg-brand-100 text-brand-800">
+                        <ChefHat className="size-5" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">Rekomendasi Produksi Besok</p>
+                        <p className="text-sm font-bold text-stone-900">Ayam Bakar Madu</p>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200/60">
+                      <TrendingDown className="size-3" /> Turun 13 Porsi
+                    </span>
                   </div>
-                  <div className="flex items-center gap-3 rounded-xl bg-accent-50/80 p-3 text-xs text-accent-900">
-                    <HandPlatter className="size-4 shrink-0 text-accent-700" />
-                    <span><b>Surplus Food:</b> Salurkan makanan berlebih layak makan ke mahasiswa</span>
+
+                  <div className="mt-3.5 grid grid-cols-2 gap-2.5 text-center">
+                    <div className="rounded-xl bg-stone-50 p-2.5 border border-stone-100">
+                      <p className="text-[11px] font-medium text-stone-500">Produksi Lalu</p>
+                      <p className="text-base font-extrabold text-stone-700">55 porsi</p>
+                    </div>
+                    <div className="rounded-xl border border-brand-200 bg-brand-50/80 p-2.5">
+                      <p className="text-[11px] font-medium text-brand-700">Saran Masak Besok</p>
+                      <p className="text-base font-extrabold text-brand-900">42 porsi</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-start gap-2 rounded-xl bg-amber-50/90 border border-amber-200/60 p-2.5 text-xs text-amber-900">
+                    <TrendingDown className="mt-0.5 size-4 shrink-0 text-amber-700" />
+                    <p className="leading-snug">
+                      <b>Hemat potensi rugi ~Rp85.000:</b> Tren riwayat menunjukkan penurunan di hari Kamis. Mengurangi porsi mencegah limbah berlebih.
+                    </p>
                   </div>
                 </div>
+
+                {/* Kartu Preview 2: Penyaluran Surplus Food Siap Ambil */}
+                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex size-9 items-center justify-center rounded-xl bg-accent-100 text-accent-700">
+                        <HandPlatter className="size-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-stone-900">Nasi Gudeg Telur Komplit</p>
+                        <p className="text-xs text-stone-500">Kantin Utama · Sisa 4 porsi</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs text-stone-400 line-through">Rp18.000</span>
+                      <p className="text-base font-extrabold text-accent-600">Rp9.000</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-2.5 text-xs">
+                    <span className="flex items-center gap-1 font-medium text-stone-600">
+                      <Clock className="size-3.5 text-stone-400" /> Batas ambil 19:30 WIB
+                    </span>
+                    <span className="flex items-center gap-1 font-semibold text-brand-700">
+                      <ShieldCheck className="size-3.5 text-brand-600" /> Lolos Cek Kelayakan AI
+                    </span>
+                  </div>
+                </div>
+
               </div>
             </div>
 
           </div>
         </section>
 
+        {/* STATS IMPACT BAND: MENEGASKAN VALUE SECARA TERUKUR */}
+        <section className="border-b border-stone-200/80 bg-white py-8 sm:py-10">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8">
+              <div className="border-l-2 border-brand-500 pl-4">
+                <p className="font-mono text-3xl font-extrabold tracking-tight text-brand-900">~30%</p>
+                <p className="mt-1 text-xs font-semibold text-stone-500 uppercase tracking-wide">Reduksi Limbah</p>
+                <p className="mt-0.5 text-xs text-stone-600">Potensi penurunan porsi terbuang lewat prediksi</p>
+              </div>
+
+              <div className="border-l-2 border-brand-500 pl-4">
+                <p className="font-mono text-3xl font-extrabold tracking-tight text-brand-900">Rp85.000+</p>
+                <p className="mt-1 text-xs font-semibold text-stone-500 uppercase tracking-wide">Efisiensi Harian</p>
+                <p className="mt-0.5 text-xs text-stone-600">Penghematan biaya modal bahan berlebih / hari</p>
+              </div>
+
+              <div className="border-l-2 border-accent-500 pl-4">
+                <p className="font-mono text-3xl font-extrabold tracking-tight text-accent-600">50% Off</p>
+                <p className="mt-1 text-xs font-semibold text-stone-500 uppercase tracking-wide">Harga Terjangkau</p>
+                <p className="mt-0.5 text-xs text-stone-600">Menu surplus layak makan untuk mahasiswa</p>
+              </div>
+
+              <div className="border-l-2 border-brand-800 pl-4">
+                <div className="flex items-center gap-1.5 font-mono text-3xl font-extrabold tracking-tight text-brand-900">
+                  <Leaf className="size-6 text-brand-600" /> SDG 12
+                </div>
+                <p className="mt-1 text-xs font-semibold text-stone-500 uppercase tracking-wide">Konservasi Pangan</p>
+                <p className="mt-0.5 text-xs text-stone-600">Konsumsi dan produksi bertanggung jawab</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* SECTION 2: ALUR 3 LANGKAH TERINTEGRASI */}
-        <section className="py-16 sm:py-20">
+        <section className="border-b border-stone-200/80 bg-stone-100/70 py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="max-w-2xl">
               <span className="text-xs font-bold uppercase tracking-wider text-brand-700">Alur Operasional</span>
@@ -168,7 +262,7 @@ export default function Landing() {
 
             <div className="mt-10 grid gap-6 sm:grid-cols-3">
               {/* Tahap 1 */}
-              <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-xs">
+              <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-2xs border-t-4 border-t-brand-600">
                 <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 font-bold text-brand-800">
                   1
                 </div>
@@ -179,7 +273,7 @@ export default function Landing() {
               </div>
 
               {/* Tahap 2 */}
-              <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-xs">
+              <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-2xs border-t-4 border-t-sky-600">
                 <div className="flex size-10 items-center justify-center rounded-xl bg-sky-100 font-bold text-sky-800">
                   2
                 </div>
@@ -190,7 +284,7 @@ export default function Landing() {
               </div>
 
               {/* Tahap 3 */}
-              <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-xs">
+              <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-2xs border-t-4 border-t-accent-600">
                 <div className="flex size-10 items-center justify-center rounded-xl bg-accent-100 font-bold text-accent-800">
                   3
                 </div>
@@ -204,7 +298,7 @@ export default function Landing() {
         </section>
 
         {/* SECTION 3: DUA PERAN, SATU EKOSISTEM */}
-        <section className="border-t border-stone-200 bg-stone-50 py-16 sm:py-20">
+        <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center">
               <span className="text-xs font-bold uppercase tracking-wider text-accent-700">Dua Sisi Solusi</span>
@@ -215,13 +309,18 @@ export default function Landing() {
 
             <div className="mt-10 grid gap-8 md:grid-cols-2">
               {/* Kolom 1: Untuk Admin Restoran / Kantin */}
-              <div className="flex flex-col justify-between rounded-3xl border border-brand-200/80 bg-white p-7 shadow-xs">
+              <div className="flex flex-col justify-between rounded-3xl border-2 border-brand-200/90 bg-gradient-to-b from-brand-50/40 via-white to-white p-7 shadow-xs">
                 <div>
-                  <div className="flex items-center gap-2 font-bold text-brand-800">
-                    <ChefHat className="size-5 text-brand-600" />
-                    <span>Untuk Pengelola Kantin & UMKM</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 font-bold text-brand-800">
+                      <ChefHat className="size-5 text-brand-600" />
+                      <span>Untuk Pengelola Kantin & UMKM</span>
+                    </div>
+                    <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-800">
+                      Dashboard Usaha
+                    </span>
                   </div>
-                  <h3 className="mt-2 text-xl font-extrabold text-stone-900">Kendalikan Biaya & Stop Rugi HPP</h3>
+                  <h3 className="mt-3 text-xl font-extrabold text-stone-900">Kendalikan Biaya & Stop Rugi HPP</h3>
                   <p className="mt-2 text-sm text-stone-600">
                     Bukan sekadar mencatat penjualan, tapi memberikan wawasan konkret untuk memangkas porsi yang sering terbuang.
                   </p>
@@ -254,13 +353,18 @@ export default function Landing() {
               </div>
 
               {/* Kolom 2: Untuk Mahasiswa / Customer */}
-              <div className="flex flex-col justify-between rounded-3xl border border-accent-200/80 bg-white p-7 shadow-xs">
+              <div className="flex flex-col justify-between rounded-3xl border-2 border-accent-200/90 bg-gradient-to-b from-accent-50/40 via-white to-white p-7 shadow-xs">
                 <div>
-                  <div className="flex items-center gap-2 font-bold text-accent-700">
-                    <Salad className="size-5 text-accent-600" />
-                    <span>Untuk Mahasiswa & Pembeli</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 font-bold text-accent-700">
+                      <Salad className="size-5 text-accent-600" />
+                      <span>Untuk Mahasiswa & Pembeli</span>
+                    </div>
+                    <span className="rounded-full bg-accent-100 px-3 py-1 text-xs font-bold text-accent-800">
+                      Portal Mahasiswa
+                    </span>
                   </div>
-                  <h3 className="mt-2 text-xl font-extrabold text-stone-900">Makan Hemat, Gizi Tetap Terkontrol</h3>
+                  <h3 className="mt-3 text-xl font-extrabold text-stone-900">Makan Hemat, Gizi Tetap Terkontrol</h3>
                   <p className="mt-2 text-sm text-stone-600">
                     Dapatkan makanan layak makan dengan diskon signifikan, sekaligus pantau asupan nutrisi sesuai target kesehatan harian.
                   </p>
