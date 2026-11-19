@@ -157,10 +157,55 @@ export default function Nutrition() {
             </Card>
           )}
           {!busy && !result && (
-            <Card className="flex h-full flex-col items-center justify-center p-8 text-center">
-              <span className="grid size-14 place-items-center rounded-2xl bg-brand-50 text-brand-700"><Salad className="size-7" /></span>
-              <p className="mt-3 font-bold text-stone-800">Hasil akan muncul di sini</p>
-              <p className="mt-1 max-w-xs text-sm text-stone-600">AI memperkirakan kalori, protein, karbohidrat, lemak, serta kecocokannya dengan tujuanmu.</p>
+            <Card className="flex h-full flex-col justify-between p-6 sm:p-7">
+              <div>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+                    <Salad className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-stone-900">Panduan & Cara Kerja Cek Gizi</h3>
+                    <p className="text-xs text-stone-500">Personalisasi nutrisi berdasarkan tujuan diet harianmu</p>
+                  </div>
+                </div>
+
+                <div className="mt-5 space-y-3.5 text-sm text-stone-600">
+                  <p>
+                    AI akan menghitung perkiraan <b>kalori total</b>, makronutrien (protein, karbohidrat, lemak, serat), serta kadar gula dan natrium dari nama atau foto makanan.
+                  </p>
+                  <p>
+                    Setiap makanan diberikan <b>Skor Kesesuaian (0–100)</b> dan status (<i>Cocok</i>, <i>Boleh dengan catatan</i>, atau <i>Sebaiknya dibatasi</i>) sesuai tujuan: <b>{DIET_GOAL_LABEL[goal]}</b>.
+                  </p>
+                </div>
+
+                <div className="mt-6 border-t border-stone-100 pt-5">
+                  <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Coba Cepat Contoh Makanan:</p>
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    {[
+                      'Ayam bakar + nasi + lalapan',
+                      'Gado-gado telur rebus',
+                      'Soto ayam bening tanpa santan',
+                      'Nasi goreng spesial telur',
+                    ].map((example) => (
+                      <button
+                        key={example}
+                        type="button"
+                        onClick={() => {
+                          setFood(example)
+                          setImage(null)
+                        }}
+                        className="rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-medium text-stone-700 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-900"
+                      >
+                        + {example}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-xl bg-stone-50 p-3 text-xs text-stone-500">
+                Setelah hasil keluar, klik <b>"Catat ke makanan hari ini"</b> agar langsung terakumulasi ke grafik progres harianmu.
+              </div>
             </Card>
           )}
           {result && v && (

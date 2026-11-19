@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import { AlertTriangle, CheckCircle2, Info, RotateCcw, ScanLine, ShieldCheck, XCircle } from 'lucide-react'
 import { VisionCapture } from '../../components/VisionCapture'
-import { AiDisclaimer, Alert, Badge, Button, Card, Field, IconTile, PageHeader, cn } from '../../components/ui'
+import { AiDisclaimer, Alert, Badge, Button, Card, Field, PageHeader, cn } from '../../components/ui'
 import { callAi } from '../../lib/api'
 import { num } from '../../lib/format'
 import { prepareImage } from '../../lib/image'
@@ -104,10 +104,45 @@ export default function WastePage() {
           )}
 
           {!busy && !result && (
-            <Card className="flex h-full min-h-72 flex-col items-center justify-center p-8 text-center">
-              <IconTile tone="sky" size="lg"><ScanLine /></IconTile>
-              <p className="mt-3 font-bold text-stone-800">Hasil analisis muncul di sini</p>
-              <p className="mt-1 max-w-sm text-sm text-stone-600">Komposisi protein, karbohidrat, lemak, serat (%), vitamin & mineral (% AKG), dan kelayakan makan.</p>
+            <Card className="flex h-full flex-col justify-between p-6 sm:p-7">
+              <div>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
+                    <ScanLine className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-stone-900">Panduan Analisis AI Vision</h3>
+                    <p className="text-xs text-stone-500">Pemeriksaan kelayakan pangan & profil gizi otomatis</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <div className="rounded-xl border border-stone-200/80 bg-stone-50/70 p-3.5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-brand-800">1. Deteksi Tanda Visual</p>
+                    <p className="mt-1 text-sm text-stone-600">
+                      AI memeriksa kematangan masakan, kesegaran tekstur/sayur, serta indikasi jamur atau perubahan fisik sebelum makanan disajikan kembali atau didaftarkan ke etalase surplus.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-stone-200/80 bg-stone-50/70 p-3.5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-brand-800">2. Estimasi Gizi Makro (%)</p>
+                    <p className="mt-1 text-sm text-stone-600">
+                      Membagi total energi porsi ke dalam rasio Protein, Karbohidrat, Lemak, dan Serat untuk transparansi informasi ke pembeli.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-stone-200/80 bg-stone-50/70 p-3.5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-brand-800">3. Mikronutrien & AKG</p>
+                    <p className="mt-1 text-sm text-stone-600">
+                      Memperkirakan persentase Angka Kecukupan Gizi (% AKG) untuk vitamin dan mineral utama orang dewasa.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-xs text-amber-900">
+                <b>Tips untuk juru masak:</b> Ambil foto dari sudut atas dengan cahaya terang. Jika kuah bersantan atau pekat, ketik nama makanan di kolom sebelah kiri untuk membantu AI.
+              </div>
             </Card>
           )}
 
