@@ -11,7 +11,6 @@ import {
   Pencil,
   Salad,
   Scale,
-  Sparkles,
   Target,
   Trash2,
   Utensils,
@@ -106,12 +105,12 @@ export default function CustomerHome() {
       <div className="relative overflow-hidden rounded-3xl border border-brand-800 bg-gradient-to-br from-brand-900 via-brand-800 to-brand-900 p-6 text-white shadow-sm sm:p-7">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-brand-200">
-              <Sparkles className="size-3.5 text-accent-400" />
-              Target Nutrisi Harian Mahasiswa
+            <div className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-brand-200">
+              <Target className="size-3.5 text-accent-300" />
+              Target Nutrisi Harian
             </div>
             <h1 className="mt-2.5 text-2xl font-extrabold sm:text-3xl">
-              Semangat hari ini, {firstName}! 🥗
+              Semangat hari ini, {firstName}
             </h1>
             <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-brand-100 sm:text-base">
               Fokus: <b className="text-white">{cfg.label}</b> ({cfg.focus}: {cfg.better === 'lower' ? 'maks.' : cfg.better === 'higher' ? 'min.' : 'sekitar'} {num(target)} {cfg.unit} per hari).
