@@ -65,13 +65,13 @@ export default function SurplusPublic() {
         </div>
       )}
       <PageHeader
-        title="Surplus Food"
-        subtitle="Makanan berlebih yang masih layak dari kantin & UMKM sekitar, dengan harga lebih terjangkau."
+        title="Makanan Surplus Kantin"
+        subtitle="Penyelamatan porsi makanan layak makan berkualitas dari kantin kampus dengan harga terjangkau."
       />
 
       {!profile && (
         <Alert tone="info">
-          <Link to="/register?role=customer" className="font-semibold underline">Daftar sebagai customer</Link> untuk memesan dan memakai fitur Cek Gizi AI.
+          <Link to="/register?role=customer" className="font-semibold underline">Daftar sebagai mahasiswa / pembeli</Link> untuk memesan makanan surplus dan menggunakan fitur Cek Gizi AI.
         </Alert>
       )}
 

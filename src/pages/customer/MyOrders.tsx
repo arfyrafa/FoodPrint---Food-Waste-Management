@@ -36,7 +36,7 @@ export default function MyOrders() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Pesananku" subtitle="Tunjukkan barcode pesanan ke penjual saat mengambil makanan." />
+      <PageHeader title="Pesanan Surplus Saya" subtitle="Tunjukkan barcode pesanan ke kasir kantin saat mengambil makanan surplus." />
       {data?.length === 0 && (
         <EmptyState icon={<Receipt className="size-6" />} title="Belum ada pesanan" action={<Link to="/surplus" className="font-semibold text-brand-700 underline">Lihat makanan surplus</Link>}>
           Pesan makanan surplus dengan harga terjangkau dari kantin sekitar.

@@ -95,17 +95,17 @@ const OWNER_NAV: NavItem[] = [
   { to: '/input', label: 'Catatan', icon: <NotebookPen className="size-5" />, tile: 'bg-amber-100 text-amber-700' },
   { to: '/waste', label: 'AI Vision', icon: <ScanLine className="size-5" />, tile: 'bg-sky-100 text-sky-700' },
   { to: '/forecast', label: 'Prediksi', icon: <ChefHat className="size-5" />, tile: 'bg-accent-100 text-accent-600' },
-  { to: '/surplus/manage', label: 'Surplus', icon: <HandPlatter className="size-5" />, tile: 'bg-rose-100 text-rose-600' },
-  { to: '/orders', label: 'Pesanan', icon: <Receipt className="size-5" />, tile: 'bg-violet-100 text-violet-700' },
+  { to: '/surplus/manage', label: 'Kelola Surplus', icon: <HandPlatter className="size-5" />, tile: 'bg-rose-100 text-rose-600' },
+  { to: '/orders', label: 'Pesanan Masuk', icon: <Receipt className="size-5" />, tile: 'bg-violet-100 text-violet-700' },
   { to: '/settings', label: 'Pengaturan', icon: <Settings className="size-5" />, tile: 'bg-stone-200 text-stone-700' },
 ]
 const OWNER_MOBILE = OWNER_NAV.slice(0, 5)
 
 const CUSTOMER_NAV: NavItem[] = [
   { to: '/home', label: 'Beranda', icon: <House className="size-5" /> },
-  { to: '/surplus', label: 'Surplus', icon: <HandPlatter className="size-5" /> },
+  { to: '/surplus', label: 'Makanan Surplus', icon: <HandPlatter className="size-5" /> },
   { to: '/nutrition', label: 'Cek Gizi', icon: <Apple className="size-5" /> },
-  { to: '/my-orders', label: 'Pesanan', icon: <Receipt className="size-5" /> },
+  { to: '/my-orders', label: 'Pesanan Surplus', icon: <Receipt className="size-5" /> },
   { to: '/profile', label: 'Profil', icon: <UserRound className="size-5" /> },
 ]
 
