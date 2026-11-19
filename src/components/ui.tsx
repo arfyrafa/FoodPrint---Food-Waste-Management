@@ -222,7 +222,7 @@ export function AiDisclaimer() {
 }
 
 export function SimulatedDataNote() {
-  return <p className="text-center text-xs text-stone-400">Data pada akun demo adalah data simulasi, bukan data usaha nyata.</p>
+  return null
 }
 
 /** Kotak ikon berwarna (dipakai seragam di seluruh web). */

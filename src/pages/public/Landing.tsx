@@ -101,7 +101,7 @@ export default function Landing() {
                   to="/login?demo=owner"
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 font-semibold text-white shadow-sm transition hover:bg-brand-800 active:scale-[0.98]"
                 >
-                  Coba Demo Admin Kantin
+                  Mulai sebagai Pengelola Kantin
                   <ArrowRight className="size-4" />
                 </Link>
                 <Link
@@ -291,7 +291,7 @@ export default function Landing() {
                     to="/login?demo=owner"
                     className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 font-semibold text-white transition hover:bg-brand-800"
                   >
-                    Masuk Demo Kantin
+                    Masuk sebagai Pengelola Kantin
                     <ArrowRight className="size-4" />
                   </Link>
                 </div>
@@ -330,7 +330,7 @@ export default function Landing() {
                     to="/login?demo=customer"
                     className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-accent-600 font-semibold text-white transition hover:bg-accent-700"
                   >
-                    Masuk Demo Pembeli
+                    Masuk sebagai Mahasiswa
                     <ArrowRight className="size-4" />
                   </Link>
                 </div>
@@ -346,20 +346,20 @@ export default function Landing() {
               Siap mengurangi limbah makanan di kantin kampusmu?
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-brand-100">
-              Coba langsung kedua peran akun demo kami dengan data simulasi operasional lengkap selama 8 minggu.
+              Mulai kelola porsi masak secara presisi atau nikmati makanan surplus layak makan dengan harga bersahabat.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Link
                 to="/login?demo=owner"
                 className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-5 font-semibold text-brand-900 shadow-sm transition hover:bg-brand-50"
               >
-                Coba Demo Pemilik Kantin
+                Masuk sebagai Pengelola Kantin
               </Link>
               <Link
                 to="/login?demo=customer"
                 className="inline-flex h-12 items-center gap-2 rounded-xl border border-brand-700 bg-brand-800/80 px-5 font-semibold text-white transition hover:bg-brand-800"
               >
-                Coba Demo Mahasiswa
+                Masuk sebagai Mahasiswa
               </Link>
             </div>
           </div>
@@ -375,7 +375,7 @@ export default function Landing() {
             <span>Techtonic ampe Wisuda · IT RUSH 2026</span>
           </div>
           <p className="text-center text-stone-500 sm:text-right">
-            Data pada akun demo adalah <b>data simulasi</b> untuk keperluan kompetisi IT RUSH 2026.
+            Platform Pengelolaan Limbah Makanan & Marketplace Surplus Terpadu.
           </p>
         </div>
       </footer>

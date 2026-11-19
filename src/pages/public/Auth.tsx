@@ -106,17 +106,16 @@ export function LoginPage() {
 
       {hasDemo && (
         <div className="mt-5 rounded-xl bg-stone-50 p-3">
-          <p className="text-xs font-semibold text-stone-600">Akun demo untuk juri (data simulasi):</p>
-          {demoMode && <p className="mt-0.5 text-xs text-stone-500">Mode demo lokal · password: <code>{DEMO_PASSWORD}</code></p>}
+          <p className="text-xs font-semibold text-stone-600">Akses Cepat (1-Klik Isi Form):</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             {DEMO.owner.email && (
               <Button type="button" size="sm" variant="outline" onClick={() => { setEmail(DEMO.owner.email!); setPassword(DEMO.owner.password ?? '') }}>
-                Demo admin
+                Pengelola Kantin
               </Button>
             )}
             {DEMO.customer.email && (
               <Button type="button" size="sm" variant="outline" onClick={() => { setEmail(DEMO.customer.email!); setPassword(DEMO.customer.password ?? '') }}>
-                Demo customer
+                Mahasiswa / Pembeli
               </Button>
             )}
           </div>
