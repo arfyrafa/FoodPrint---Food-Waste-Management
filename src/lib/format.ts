@@ -53,14 +53,27 @@ export function formatTime(ts: string) {
   return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })
 }
 
-/** Sisa waktu relatif, contoh "2 jam 15 mnt lagi". */
+/** Sisa waktu relatif, contoh "13 hari lagi", "5 jam lagi", "45 mnt lagi". */
 export function timeLeft(ts: string, now = Date.now()): string {
   const diff = new Date(ts).getTime() - now
   if (diff <= 0) return 'Sudah lewat'
   const mins = Math.floor(diff / 60_000)
   const h = Math.floor(mins / 60)
+  const days = Math.floor(h / 24)
+
+  if (days >= 2) return `${days} hari lagi`
+  if (days === 1) {
+    const remH = h % 24
+    return remH > 0 ? `1 hari ${remH} jam lagi` : `1 hari lagi`
+  }
   const m = mins % 60
   return h > 0 ? `${h} jam ${m} mnt lagi` : `${m} mnt lagi`
+}
+
+/** Mengecek apakah sisa waktu segera berakhir (<= 2 jam). */
+export function isEndingSoon(ts: string, now = Date.now()): boolean {
+  const diff = new Date(ts).getTime() - now
+  return diff > 0 && diff <= 2 * 3600_000
 }
 
 export function waLink(phone: string | null | undefined, text: string): string | null {
