@@ -86,7 +86,18 @@ export default function SurplusPublic() {
       {error && <Alert tone="danger">{error}</Alert>}
       {data && list.length === 0 && (
         <EmptyState icon={<HeartHandshake className="size-6" />} title={query ? 'Tidak ditemukan' : 'Belum ada makanan surplus saat ini'}>
-          {query ? 'Coba kata kunci lain.' : 'Cek lagi nanti, biasanya kantin memasang sisa setelah jam makan siang.'}
+          {query ? (
+            'Coba kata kunci lain atau periksa kembali ejaan nama makanan/kantin.'
+          ) : (
+            <div className="space-y-3">
+              <p>Biasanya kantin kampus memasang makanan surplus setelah jam makan siang (pk 14:00) hingga sore hari.</p>
+              {profile?.role === 'owner' && (
+                <Button variant="outline" size="sm" onClick={() => navigate('/surplus/manage')}>
+                  + Pasang Makanan Surplus
+                </Button>
+              )}
+            </div>
+          )}
         </EmptyState>
       )}
 
@@ -123,8 +134,12 @@ export default function SurplusPublic() {
                 {(l.location_note || l.address) && <p className="flex items-start gap-1.5"><MapPin className="mt-0.5 size-3.5 shrink-0" /> {l.location_note || l.address}</p>}
               </div>
               <div className="mt-4 flex flex-wrap gap-2 pt-1">
-                {profile?.role !== 'owner' && (
+                {profile?.role !== 'owner' ? (
                   <Button size="sm" variant="accent" onClick={() => openOrder(l)}>{profile ? 'Pesan' : 'Masuk untuk pesan'}</Button>
+                ) : (
+                  <Link to="/surplus/manage" className="inline-flex h-9 items-center rounded-xl border border-stone-200 bg-stone-50 px-3 text-xs font-semibold text-stone-700 hover:bg-stone-100">
+                    Kelola di Dashboard
+                  </Link>
                 )}
                 {isCustomer && (
                   <Button size="sm" variant="outline" icon={<Salad className="size-4" />} onClick={() => navigate(`/nutrition?food=${encodeURIComponent(l.title)}`)}>
