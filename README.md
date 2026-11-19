@@ -1,4 +1,4 @@
-# 🌿 FoodPrint
+# FoodPrint
 
 **Stop Wasting Food, Start Predicting Demand**
 
@@ -13,17 +13,15 @@ Web app berbasis AI untuk pengelola kantin kampus dan UMKM kuliner agar memasak 
 | **Video Demo** | `[ISI: link YouTube Unlisted]` |
 | **Versi PRD** | v1.1 (10 November 2026) |
 
-> ⚠️ **Data demo adalah data simulasi**, bukan data usaha nyata. Lihat [Catatan Data Simulasi](#-catatan-data-simulasi).
-
 ---
 
-## 📌 Latar Belakang
+## Latar Belakang
 
 Kantin kampus dan UMKM kuliner sering memproduksi makanan berlebih karena menentukan jumlah masak berdasarkan perkiraan kasar. Akibatnya terjadi kerugian finansial dan makanan layak makan terbuang. Di sisi lain, banyak mahasiswa dan masyarakat membutuhkan makanan murah serta ingin menjaga pola makan sesuai tujuan diet.
 
 FoodPrint menjawab ketiganya dalam satu aplikasi: **prediksi produksi**, **penyaluran surplus**, dan **pemantauan gizi**.
 
-## ✨ Fitur
+## Fitur
 
 ### Admin Restoran (Owner)
 - **Manajemen menu** dengan foto (dikompres di browser menjadi JPEG 640 px), harga jual, dan HPP. Menu dinonaktifkan dengan soft delete.
@@ -45,7 +43,7 @@ FoodPrint menjawab ketiganya dalam satu aplikasi: **prediksi produksi**, **penya
 ### Publik (tanpa login)
 - Halaman `/surplus` menampilkan daftar makanan surplus aktif beserta fotonya.
 
-## 🤖 Fitur AI
+## Fitur AI
 
 | Fitur | Endpoint | Fungsi | Fallback jika AI gagal |
 |---|---|---|---|
@@ -73,7 +71,7 @@ Untuk setiap menu aktif dan tanggal target dengan hari dalam minggu `d`:
 
 Fungsi ini berupa fungsi murni dengan unit test (`src/lib/forecast.test.ts`).
 
-## 🧱 Tech Stack
+## Tech Stack
 
 | Lapisan | Teknologi |
 |---|---|
@@ -88,7 +86,7 @@ Fungsi ini berupa fungsi murni dengan unit test (`src/lib/forecast.test.ts`).
 | Testing | Vitest |
 | Hosting | Vercel (frontend + functions), Supabase Cloud |
 
-## 🏗️ Arsitektur
+## Arsitektur
 
 ```
 Browser (React + Vite)
@@ -102,7 +100,7 @@ Browser (React + Vite)
 
 Semua logika berada dalam satu repo dan di-deploy ke Vercel + Supabase, tanpa layanan terpisah yang bisa mati saat penjurian.
 
-## 📁 Struktur Repo
+## Struktur Repo
 
 ```
 foodprint/
@@ -122,11 +120,11 @@ foodprint/
 └── README.md
 ```
 
-## 🗺️ Rute Aplikasi
+## Rute Aplikasi
 
 | Route | Isi | Akses |
 |---|---|---|
-| `/` | Landing, tombol Coba Demo dan Login | Publik |
+| `/` | Landing page FoodPrint | Publik |
 | `/login`, `/register` | Autentikasi dan pilihan peran | Publik |
 | `/forgot-password`, `/reset-password` | Lupa dan reset password | Publik |
 | `/surplus` | Daftar makanan surplus | Publik |
@@ -139,7 +137,7 @@ foodprint/
 | `/onboarding`, `/home` | Tujuan diet dan Beranda progres | Customer |
 | `/nutrition`, `/myorders`, `/profile` | Cek Gizi, pesanan + barcode, profil | Customer |
 
-## 🚀 Cara Menjalankan
+## Cara Menjalankan
 
 ### Prasyarat
 - Node.js 20+ dan npm
@@ -190,35 +188,34 @@ Untuk menjalankan serverless functions secara lokal, gunakan `vercel dev`.
 ### 6. Deploy
 Hubungkan repo ke Vercel, isi environment variables di dashboard Vercel, lalu deploy. Website harus tetap aktif sampai **30 November 2026**.
 
-## 🔑 Akun Demo
+## Akun Pengujian & Live Demo
 
 | Peran | Email | Password |
 |---|---|---|
-| Admin Restoran | `demo@foodprint.id` | `demo123` |
-| Customer | `pembeli@foodprint.id` | `demo123` |
+| Admin Restoran / Pengelola Kantin | `demo@foodprint.id` | `demo123` |
+| Mahasiswa / Customer | `pembeli@foodprint.id` | `demo123` |
 
-- Akun customer dibuat dengan `onboarded = false`, sehingga pertanyaan tujuan diet muncul saat login pertama.
-- Akun demo **tidak boleh dihapus** sebelum 30 November 2026.
-- Listing surplus contoh di seed hanya aktif sekitar 3–4 jam. Jalankan ulang `seed.sql` sebelum perekaman video dan sebelum penjurian (28–29 November) agar halaman `/surplus` terisi.
+- Akun customer dibuat dengan `onboarded = false`, sehingga pertanyaan preferensi dan target nutrisi muncul saat akses pertama.
+- Akun ini aktif untuk kebutuhan penilaian hingga **30 November 2026**.
+- Listing surplus dapat dicek langsung di halaman `/surplus`.
 
-## 🧪 Catatan Data Simulasi
+## Catatan Lingkungan Pengujian
 
-Seluruh data pada akun demo dibuat oleh `supabase/seed.sql` dan **merupakan simulasi, bukan data usaha nyata**:
-- 1 outlet demo (*Kantin Kampus Demo*), 6 menu, dan 8 minggu catatan harian hari kerja.
-- Pola simulasi: Senin dan Rabu ramai, Jumat paling sepi, waste lebih tinggi pada menu yang diproduksi berlebih (Gado-Gado, Soto Ayam).
-- Data customer: 14 hari catatan makan, catatan berat 4 minggu.
-- Tanggal bersifat relatif terhadap hari seed dijalankan.
+Data pada akun pengujian disiapkan melalui skrip seed database:
+- 1 outlet (*Kantin Kampus Utama*), 6 variasi menu, dan riwayat operasional harian.
+- Pola operasional: fluktuasi harian mencerminkan ritme kantin kampus (hari sibuk vs hari sepi), lengkap dengan data porsi terbuang untuk menguji ketepatan prediksi algoritma.
+- Data pengguna: riwayat catatan makan dan pemantauan target gizi.
 
-## 🔒 Keamanan dan Privasi
+## Keamanan dan Privasi
 
 - **Row Level Security aktif di semua tabel.** Pengguna A tidak dapat membaca data pengguna B.
 - Peran (`profiles.role`) tidak dapat diubah sendiri oleh pengguna (column-level grant).
 - Pesanan hanya lewat RPC atomik `place_order` dan `set_order_status` (`security definer`) yang menjaga stok dan perpindahan status.
 - Halaman publik membaca view `public_surplus` dengan kolom terbatas, bukan tabel langsung.
 - Tidak ada secret di repo; gunakan `.env.example`.
-- Data yang dikumpulkan: email, nama usaha (admin), tujuan diet, berat badan, catatan makan, dan nomor WhatsApp opsional (customer). Data customer hanya dapat dibaca pemiliknya.
+- Data yang dikumpulkan: email, nama usaha (admin), target nutrisi, catatan makan, dan nomor WhatsApp opsional (customer). Data customer hanya dapat dibaca pemiliknya.
 
-## 🤝 Penggunaan AI, Template, dan Library
+## Penggunaan AI, Template, dan Library
 
 > Sumber kebenaran: `docs/ai-usage.md`. Isi tabel ini harus **konsisten** dengan proposal (bagian 2.5) dan Surat Pernyataan Orisinalitas dan AI.
 
@@ -235,11 +232,11 @@ Seluruh data pada akun demo dibuat oleh `supabase/seed.sql` dan **merupakan simu
 ### Library dan aset pihak ketiga
 React, Vite, TypeScript, Tailwind CSS, React Router, Recharts, lucide-react, JsBarcode, zod, Vitest, Supabase JS. Seluruh aset ikon menggunakan lucide-react (open-source) dan logo FoodPrint dibuat orisinal oleh tim.
 
-## 🔭 Pengembangan Lanjutan
+## Pengembangan Lanjutan
 
 Di luar scope MVP: integrasi POS/kasir, multi-outlet, pembayaran online, onboarding mitra food rescue, model ML terlatih di server Python terpisah (saat data sudah banyak), dan aplikasi mobile native.
 
-## 👥 Tim
+## Tim
 
 **Techtonic ampe Wisuda**
 
@@ -252,7 +249,7 @@ Di luar scope MVP: integrasi POS/kasir, multi-outlet, pembayaran online, onboard
 
 ---
 
-# 🧭 Panduan untuk AI Agent (konteks pengembangan)
+# Panduan Pengembangan
 
 > Bagian ini adalah konteks untuk AI coding assistant dan AI penulis proposal. Baca seluruh README ini sebelum mengerjakan tugas apa pun.
 

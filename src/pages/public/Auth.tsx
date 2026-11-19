@@ -86,8 +86,6 @@ export function LoginPage() {
     if (err) setError(friendlyError(err))
   }
 
-  const hasDemo = Boolean(DEMO.owner.email || DEMO.customer.email)
-
   return (
     <AuthShell title="Masuk" subtitle="Masuk sebagai admin restoran atau customer.">
       <form onSubmit={submit} className="space-y-4">
@@ -103,24 +101,6 @@ export function LoginPage() {
         </div>
         <Button type="submit" className="w-full" size="lg" loading={busy}>Masuk</Button>
       </form>
-
-      {hasDemo && (
-        <div className="mt-5 rounded-xl bg-stone-50 p-3">
-          <p className="text-xs font-semibold text-stone-600">Akses Cepat (1-Klik Isi Form):</p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {DEMO.owner.email && (
-              <Button type="button" size="sm" variant="outline" onClick={() => { setEmail(DEMO.owner.email!); setPassword(DEMO.owner.password ?? '') }}>
-                Pengelola Kantin
-              </Button>
-            )}
-            {DEMO.customer.email && (
-              <Button type="button" size="sm" variant="outline" onClick={() => { setEmail(DEMO.customer.email!); setPassword(DEMO.customer.password ?? '') }}>
-                Mahasiswa / Pembeli
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
 
       <p className="mt-5 text-center text-sm text-stone-600">
         Belum punya akun? <Link to="/register" className="font-semibold text-brand-700 hover:underline">Daftar</Link>
