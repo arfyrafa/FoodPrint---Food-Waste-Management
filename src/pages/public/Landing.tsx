@@ -3,11 +3,9 @@ import {
   ArrowRight,
   CheckCircle2,
   ChefHat,
-  Clock,
   HandPlatter,
   Salad,
   ShieldCheck,
-  Sparkles,
   UtensilsCrossed,
 } from 'lucide-react'
 import { Logo, ConfigWarning, homeFor } from '../../components/Layouts'
@@ -127,69 +125,27 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Sisi Kanan: UI Artifact Showcase Nyata (Bukan sekadar gambar logo atau orb generik) */}
-            <div className="space-y-4">
-              {/* Kartu Preview 1: Prediksi Produksi Kantin */}
-              <div className="rounded-2xl border border-stone-200/90 bg-white p-5 shadow-sm">
-                <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
-                      <ChefHat className="size-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-stone-500">Rekomendasi Produksi Besok</p>
-                      <p className="text-sm font-bold text-stone-900">Ayam Bakar Madu</p>
-                    </div>
+            {/* Sisi Kanan: Visual Branding FoodPrint */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-full max-w-md rounded-3xl border border-stone-200/90 bg-white p-6 shadow-sm sm:p-7">
+                <img
+                  src="/logo-full.png"
+                  alt="FoodPrint Logo"
+                  className="mx-auto w-full max-w-[260px]"
+                />
+                <div className="mt-6 space-y-2.5 border-t border-stone-100 pt-5">
+                  <div className="flex items-center gap-3 rounded-xl bg-brand-50/80 p-3 text-xs text-brand-900">
+                    <ChefHat className="size-4 shrink-0 text-brand-700" />
+                    <span><b>Prediksi Produksi:</b> Masak terukur dari riwayat penjualan harian</span>
                   </div>
-                  <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-                    Turun 13 Porsi
-                  </span>
-                </div>
-
-                <div className="mt-4 grid grid-cols-2 gap-3 text-center">
-                  <div className="rounded-xl bg-stone-50 p-2.5">
-                    <p className="text-xs text-stone-500">Produksi Lalu</p>
-                    <p className="text-lg font-extrabold text-stone-700">55 porsi</p>
+                  <div className="flex items-center gap-3 rounded-xl bg-sky-50/80 p-3 text-xs text-sky-900">
+                    <ShieldCheck className="size-4 shrink-0 text-sky-700" />
+                    <span><b>AI Vision:</b> Cek visual kelayakan makanan & profil nutrisi</span>
                   </div>
-                  <div className="rounded-xl border border-brand-200 bg-brand-50 p-2.5">
-                    <p className="text-xs font-medium text-brand-700">Saran Besok</p>
-                    <p className="text-lg font-extrabold text-brand-900">42 porsi</p>
+                  <div className="flex items-center gap-3 rounded-xl bg-accent-50/80 p-3 text-xs text-accent-900">
+                    <HandPlatter className="size-4 shrink-0 text-accent-700" />
+                    <span><b>Surplus Food:</b> Salurkan makanan berlebih layak makan ke mahasiswa</span>
                   </div>
-                </div>
-
-                <div className="mt-3 flex items-start gap-2 rounded-xl bg-amber-50/80 p-3 text-xs text-amber-900">
-                  <Sparkles className="mt-0.5 size-3.5 shrink-0 text-amber-600" />
-                  <p>
-                    <b>Hemat potensi rugi ~Rp85.000:</b> Data 4 minggu terakhir menunjukkan tren penurunan di hari Kamis. Mengurangi porsi mencegah limbah berlebih.
-                  </p>
-                </div>
-              </div>
-
-              {/* Kartu Preview 2: Surplus Makanan Siap Ambil */}
-              <div className="rounded-2xl border border-stone-200/90 bg-white p-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-accent-100 text-accent-700">
-                      <HandPlatter className="size-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-stone-900">Nasi Gudeg Telur Komplit</p>
-                      <p className="text-xs text-stone-500">Kantin Utama · Sisa 4 porsi</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-stone-400 line-through">Rp18.000</span>
-                    <p className="text-base font-extrabold text-accent-600">Rp9.000</p>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3 text-xs">
-                  <span className="flex items-center gap-1 font-medium text-stone-600">
-                    <Clock className="size-3.5 text-stone-400" /> Batas ambil 19:30 WIB
-                  </span>
-                  <span className="flex items-center gap-1 font-semibold text-brand-700">
-                    <ShieldCheck className="size-3.5" /> Lolos Cek Kelayakan
-                  </span>
                 </div>
               </div>
             </div>
