@@ -138,20 +138,6 @@ export default function Landing() {
                     className="h-auto w-full object-cover rounded-2xl transition duration-500 ease-out group-hover:scale-[1.02]"
                     loading="eager"
                   />
-                  
-                  {/* Overlay gradien halus di bagian bawah gambar untuk keterbacaan */}
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
-
-                  {/* Badge Mengambang Estetik di Sudut Gambar */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white drop-shadow-sm sm:bottom-4 sm:left-4 sm:right-4">
-                    <div className="inline-flex items-center gap-2 rounded-xl bg-black/40 px-3 py-1.5 text-xs font-semibold backdrop-blur-md border border-white/20">
-                      <Leaf className="size-3.5 text-emerald-400" />
-                      <span>Ekosistem Bebas Limbah Makanan</span>
-                    </div>
-                    <span className="hidden rounded-lg bg-brand-700/80 px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase text-white backdrop-blur-md border border-white/20 sm:inline">
-                      SDG 12
-                    </span>
-                  </div>
                 </div>
 
               </div>
