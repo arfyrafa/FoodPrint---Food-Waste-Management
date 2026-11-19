@@ -44,13 +44,23 @@ export function formatDateLong(iso: string) {
 }
 
 export function formatDateTime(ts: string) {
-  return new Date(ts).toLocaleString('id-ID', {
-    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta',
-  })
+  return new Date(ts)
+    .toLocaleString('id-ID', {
+      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta',
+    })
+    .replace('.', ':')
 }
 
 export function formatTime(ts: string) {
-  return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })
+  return new Date(ts)
+    .toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })
+    .replace('.', ':')
+}
+
+/** Mengubah teks menjadi Title Case (misal: "bubur" -> "Bubur", "soto ayam" -> "Soto Ayam") */
+export function toTitleCase(str: string): string {
+  if (!str) return ''
+  return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase())
 }
 
 /** Sisa waktu relatif, contoh "13 hari lagi", "5 jam lagi", "45 mnt lagi". */

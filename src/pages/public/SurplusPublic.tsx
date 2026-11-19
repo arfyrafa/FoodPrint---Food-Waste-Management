@@ -19,7 +19,7 @@ import { menuColor } from '../../components/MenuAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { BackLink } from '../../components/Layouts'
 import { useAsync } from '../../lib/data'
-import { formatTime, isEndingSoon, rupiah, timeLeft, waLink } from '../../lib/format'
+import { formatTime, isEndingSoon, rupiah, timeLeft, toTitleCase, waLink } from '../../lib/format'
 import { friendlyError, supabase } from '../../lib/supabase'
 import { BUSINESS_TYPE_LABEL, type Order, type PublicSurplus } from '../../lib/types'
 
@@ -154,11 +154,11 @@ export default function SurplusPublic() {
 
       {/* FILTER & PENCARIAN TERPADU */}
       <div className="space-y-3 rounded-2xl border border-stone-200/80 bg-white p-3.5 shadow-xs sm:p-4">
-        {/* Baris 1: Search Input */}
+        {/* Baris 1: Search Input dengan Kontras Kuat */}
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400" />
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-500" />
           <input
-            className="input pl-10 h-11"
+            className="input pl-10 h-11 placeholder:text-stone-600 text-stone-900 border-stone-300 focus:border-brand-600 focus:ring-brand-600/20"
             placeholder="Cari makanan atau nama kantin..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -383,11 +383,15 @@ export default function SurplusPublic() {
                 {/* Header Judul & Nama Kantin */}
                 <div>
                   <h3 className="text-base font-extrabold text-stone-900 line-clamp-1" title={l.title}>
-                    {l.title}
+                    {l.title.trim().toLowerCase() === 'bubur' ? 'Bubur Ayam' : toTitleCase(l.title)}
                   </h3>
                   <p className="mt-0.5 flex items-center gap-1.5 text-xs text-stone-500">
                     <Store className="size-3.5 shrink-0 text-stone-400" />
-                    <span className="truncate">{l.business_name} · {BUSINESS_TYPE_LABEL[l.business_type]}</span>
+                    <span className="truncate">
+                      {l.business_name.toLowerCase().includes(BUSINESS_TYPE_LABEL[l.business_type].toLowerCase())
+                        ? l.business_name
+                        : `${l.business_name} · ${BUSINESS_TYPE_LABEL[l.business_type]}`}
+                    </span>
                   </p>
                 </div>
 
@@ -443,13 +447,13 @@ export default function SurplusPublic() {
                   )}
                 </div>
 
-                {/* Tombol Aksi */}
+                {/* Tombol Aksi dengan Hirarki Jelas */}
                 <div className="mt-4 flex items-center gap-2 pt-2 border-t border-stone-100">
                   {profile?.role !== 'owner' ? (
                     <Button
                       size="sm"
                       variant="accent"
-                      className="flex-1 font-bold"
+                      className="flex-1 font-bold shadow-xs hover:bg-accent-700 active:scale-[0.98]"
                       onClick={() => openOrder(l)}
                     >
                       {profile ? 'Pesan' : 'Masuk untuk Pesan'}
@@ -464,15 +468,15 @@ export default function SurplusPublic() {
                   )}
 
                   {isCustomer && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      icon={<Salad className="size-3.5" />}
+                    <button
+                      type="button"
                       onClick={() => navigate(`/nutrition?food=${encodeURIComponent(l.title)}`)}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-2.5 text-xs font-semibold text-stone-700 transition hover:border-stone-300 hover:bg-stone-50"
                       title="Periksa kalori dan gizi makanan ini"
                     >
-                      Cek Gizi
-                    </Button>
+                      <Salad className="size-3.5 text-brand-600" />
+                      <span>Cek Gizi</span>
+                    </button>
                   )}
 
                   {wa && (
@@ -480,8 +484,9 @@ export default function SurplusPublic() {
                       href={wa}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex size-9 items-center justify-center rounded-xl border border-stone-200 text-stone-600 transition hover:bg-stone-50 hover:text-brand-800"
+                      className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-600 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
                       title="Hubungi kantin via WhatsApp"
+                      aria-label="Hubungi kantin via WhatsApp"
                     >
                       <MessageCircle className="size-4 text-emerald-600" />
                     </a>
@@ -507,7 +512,9 @@ export default function SurplusPublic() {
             ) : (
               <>
                 <div className="rounded-xl bg-stone-50 p-3 border border-stone-200/70">
-                  <p className="font-bold text-stone-900">{ordering.title}</p>
+                  <p className="font-bold text-stone-900">
+                    {ordering.title.trim().toLowerCase() === 'bubur' ? 'Bubur Ayam' : toTitleCase(ordering.title)}
+                  </p>
                   <p className="text-xs text-stone-600 mt-0.5">
                     {ordering.business_name} · Ambil sebelum {formatTime(ordering.pickup_until)} ({timeLeft(ordering.pickup_until)})
                   </p>
