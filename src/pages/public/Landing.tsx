@@ -142,20 +142,20 @@ export default function Landing() {
               </p>
 
               {/* Tombol Aksi Nyata */}
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   to="/login"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 font-semibold text-white shadow-sm transition hover:bg-brand-800 active:scale-[0.98]"
+                  className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-700 px-5 text-sm sm:text-base font-semibold text-white shadow-sm transition hover:bg-brand-800 active:scale-[0.98]"
                 >
-                  Mulai sebagai Pengelola Kantin
+                  Mulai Kelola Kantin
                   <ArrowRight className="size-4" />
                 </Link>
                 <Link
                   to="/surplus"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white px-5 font-semibold text-stone-800 shadow-sm transition hover:bg-stone-50 active:scale-[0.98]"
+                  className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-stone-300 bg-white px-5 text-sm sm:text-base font-semibold text-stone-800 shadow-sm transition hover:bg-stone-50 active:scale-[0.98]"
                 >
                   <HandPlatter className="size-4 text-accent-500" />
-                  Jelajahi Makanan Surplus
+                  Jelajahi Surplus
                 </Link>
               </div>
 
@@ -806,14 +806,14 @@ export default function Landing() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to="/surplus"
-                className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 font-semibold text-brand-900 shadow-sm transition hover:bg-brand-50"
+                className="inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-xl bg-white px-6 font-semibold text-brand-900 shadow-sm transition hover:bg-brand-50"
               >
                 <HandPlatter className="size-4 text-accent-600" />
                 Jelajahi Makanan Surplus
               </Link>
               <Link
                 to="/login"
-                className="inline-flex h-12 items-center gap-2 rounded-xl border border-brand-700 bg-brand-800/80 px-6 font-semibold text-white transition hover:bg-brand-800"
+                className="inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-xl border border-brand-700 bg-brand-800/80 px-6 font-semibold text-white transition hover:bg-brand-800"
               >
                 Masuk ke Aplikasi
                 <ArrowRight className="size-4" />
